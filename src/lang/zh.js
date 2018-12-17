@@ -7,15 +7,11 @@ export default {
   route: {
     systemManager: '系统管理',
     dashboard: '首页',
-    widget: '控件',
-    permission: '权限控制',
-    datatable: '表格',
+    addbanner: '添加菜单',
     components: '组件',
     page1: '组件1',
     page2: '组件2',
-    page3: '组件3',
-    profile: '个人中心',
-    panels: '卡片展示'
+    page3: '组件3'
   },
   app: {
     switchlang: '切换语言成功',

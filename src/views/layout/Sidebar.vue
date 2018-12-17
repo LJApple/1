@@ -18,6 +18,7 @@
 import { mapGetters } from 'vuex'
 import sidebarItem from './SidebarItem'
 import { GetMenuAll } from '@/api/menu'
+import _import from '@/utils/import'
 export default {
   name: 'Sidebar',
   data() {
@@ -47,6 +48,20 @@ export default {
     // 获取菜单
     async GetMenuAll() {
       const { data } = await GetMenuAll()
+      this.permission_routers = [
+        {
+            path: '',
+            children: [{
+              path: 'addbanner',
+              name: 'addbanner',
+              component: _import('addbanner/index'),
+              meta: {
+                title: 'addbanner',
+                icon: 'dashboard'
+              }
+            }]
+        }
+      ]
       // this.permission_routers = [
       //   {
       //       path: 'dashboard',
@@ -73,7 +88,7 @@ export default {
       //   }
       // ]
       /* eslint-disable */
-      console.log(data)
+      console.log(data, this.permission_routers)
     }
   }
 }

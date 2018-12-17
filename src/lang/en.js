@@ -6,15 +6,11 @@ export default {
   },
   route: {
     dashboard: 'Dashboard',
-    widget: 'Widget',
-    permission: 'Permission',
-    datatable: 'Datatable',
+    addbanner: 'addbanner',
     components: 'Components',
     page1: 'page1',
     page2: 'page2',
-    page3: 'page3',
-    profile: 'Profile',
-    panels: 'Panels'
+    page3: 'page3'
   },
   app: {
     switchlang: 'Switch Language Success',

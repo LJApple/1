@@ -28,6 +28,20 @@ export const constantRouterMap = [
         noCache: true
       }
     }]
+  },
+  {
+    path: '',
+    component: Layout,
+    children: [{
+      path: 'addbanner',
+      name: 'addbanner',
+      component: _import('addbanner/index'),
+      meta: {
+        title: 'addbanner',
+        icon: 'dashboard',
+        noCache: true
+      }
+    }]
   }
 ]
 
