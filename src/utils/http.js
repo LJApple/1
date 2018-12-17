@@ -1,5 +1,5 @@
 import axios from 'axios'
-import store from '@/store'
+// import store from '@/store'
 import { getToken } from '@/utils/auth'
 import * as tools from './tools'
 const baseURL = 'http://tyg.sztymk.com:1004/rbac-v1.0'
@@ -12,9 +12,11 @@ const http = axios.create({
 // request 拦截器
 http.interceptors.request.use(
   config => {
-    console.log('store.getters.token', store.getters.token)
-    if (store.getters.token) {
-      config.headers['token'] = getToken()
+    const token = getToken()
+    /* eslint-disable */
+    console.log('getToken', token)
+    if (token) {
+      config.headers['Authorization'] = token
     }
     return config
   },
