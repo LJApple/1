@@ -7,11 +7,7 @@ export default {
   route: {
     systemManager: '系统管理',
     dashboard: '首页',
-    addbanner: '添加菜单',
-    components: '组件',
-    page1: '组件1',
-    page2: '组件2',
-    page3: '组件3'
+    addbanner: '添加菜单'
   },
   app: {
     switchlang: '切换语言成功',
@@ -59,5 +55,11 @@ export default {
   lock: {
     locked: '系统已被锁定！',
     unlock: '系统已解锁成功！'
+  },
+  views: {
+    addbanner: {
+      addbanner: '添加菜单',
+      menuName: '菜单名称'
+    }
   }
 }
