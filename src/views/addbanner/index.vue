@@ -2,12 +2,12 @@
   <div class="tree">
     <div class="t-left">
       <el-tree
-        :props="props"
-        :load="loadNode"
-        lazy
+        :data="nodeData"
         show-checkbox
-        @check-change="handleCheckChange"
-      >
+        node-key="id"
+        :draggable='draggable'
+        @node-click = 'nodeClick'
+        :props="defaultProps">
       </el-tree>
     </div>
     <div class="t-right">
@@ -21,7 +21,8 @@
       </div>
       <el-table
         ref="multipleTable"
-        :data="tableData3"
+        :data="tableData"
+        v-if="tableData.length > 0"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change="handleSelectionChange"
@@ -31,24 +32,27 @@
           width="55"
         >
         </el-table-column>
-        <el-table-column
-          label="日期"
-          width="120"
-        >
-          <template slot-scope="scope">{{ scope.row.date }}</template>
+       <!-- <el-table-column label="选中"  prop="isFreeze">
+          <template slot-scope="props">
+            <el-radio v-model="props.row.isFreeze" label="true">是</el-radio>
+            <el-radio v-model="props.row.isFreeze" label="false">否</el-radio>
+          </template>
+        </el-table-column> -->
+        <template v-for="item in tableColum">
+          <el-table-column :key="item.menuId"
+          :label="item.label"
+          width="200"
+          :prop="item.prop"
+          >
+          <template slot-scope="props">
+            <div v-if="props.row.isFreeze === true">
+              <el-radio v-model="props.row.isFreeze" label="true">是</el-radio>
+              <el-radio v-model="props.row.isFreeze" label="false">否</el-radio>
+            </div>
+            <span v-else>{{props.row[item.prop]}}</span>
+          </template>
         </el-table-column>
-        <el-table-column
-          prop="name"
-          label="姓名"
-          width="120"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="地址"
-          show-overflow-tooltip
-        >
-        </el-table-column>
+        </template>
       </el-table>
     </div>
     <!-- dialog -->
@@ -71,7 +75,7 @@
           <el-input v-model="form.remark" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="排序" :label-width="formLabelWidth">
-          <el-input v-model="form.sort" autocomplete="off"></el-input>
+          <el-input v-model="form.sort" type="number" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="权限分配" :label-width="formLabelWidth">
           <el-radio v-model="form.haveMenuPermission" label="true">是</el-radio>
@@ -99,45 +103,24 @@
 </template>
 
 <script>
-import { AddMenu } from '@/api/menu'
+import { AddMenu, getMenuTree, getListByPid } from '@/api/menu'
 export default {
   name: 'dashboard',
   data() {
     return {
-      props: {
-        label: 'name',
-        children: 'zones'
-      },
-      count: 1,
-      tableData3: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
+      tableData: [],
+      radio: '1',
+      tableColum: [
+        {label: '菜单名称', prop: 'menuName'},
+        {label: '菜单图标', prop: 'icon'},
+        {label: '打开地址', prop: 'openUrl'},
+        {label: '备注', prop: 'remark'},
+        {label: '打开方式', prop: 'openType'},
+        {label: '权限分配', prop: 'haveMenuPermission'},
+        {label: '操作权限分配', prop: 'haveFunctionPermission'},
+        {label: '是否冻结', prop: 'isFreeze'},
+        {label: '是否显示菜单', prop: 'isShow'},
+      ],
       multipleSelection: [],
       input: null,
       dialogFormVisible: false,
@@ -154,48 +137,18 @@ export default {
         isFreeze: 'true', // 是否冻结
         isShow: 'true' // 是否显示菜单
       },
-      formLabelWidth: '100px'
+      formLabelWidth: '100px',
+      nodeData: [],
+      // 重置树节点
+      defaultProps: {
+        label: 'name'
+      },
+      draggable: true, // 是否开启拖拽菜单
+      nodeClickInfo: ''
     }
   },
   methods: {
-    handleCheckChange(data, checked, indeterminate) {
-      /* eslint-disable */
-      console.log(data, checked, indeterminate)
-    },
-    handleNodeClick(data) {
-      /* eslint-disable */
-      console.log(data)
-    },
-    loadNode(node, resolve) {
-      if (node.level === 0) {
-        return resolve([{ name: 'region1' }, { name: 'region2' }])
-      }
-      if (node.level > 3) return resolve([])
-
-      var hasChild
-      if (node.data.name === 'region1') {
-        hasChild = true
-      } else if (node.data.name === 'region2') {
-        hasChild = false
-      } else {
-        hasChild = Math.random() > 0.5
-      }
-
-      setTimeout(() => {
-        var data;
-        if (hasChild) {
-          data = [{
-            name: 'zone' + this.count++
-          }, {
-            name: 'zone' + this.count++
-          }]
-        } else {
-          data = []
-        }
-
-        resolve(data)
-      }, 500)
-    },
+    // table
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
@@ -208,9 +161,39 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
+    // 获取table
+    async getListByPid() {
+      const menuId = !this.nodeClickInfo ? '' : this.nodeClickInfo.id
+      const {data, code} = await getListByPid(menuId)
+      if (code === 200) this.tableData = data
+      /* eslint-disable */
+      console.log('data', code, data, this.tableData)
+    },
+    // table
+    nodeClick(data) {
+      this.nodeClickInfo = data
+      /* eslint-disable */
+      console.log('data', this.nodeClickInfo = data)
+    },
+    handleCheckChange(data, checked, indeterminate) {
+      /* eslint-disable */
+      console.log(data, checked, indeterminate)
+    },
+    handleNodeClick(data) {
+      /* eslint-disable */
+      console.log(data)
+    },
+    // 获取树结构菜单
+    async getMenuTree() {
+      const {data, code} = await getMenuTree()
+      if (code === 200) this.nodeData = data
+      /* eslint-disable */
+      console.log('data', code, data)
+    },
     // 添加菜单
     async summitAddBanner() {
       const curForm = {}
+      if (this.nodeClickInfo) this.form.parentId = this.nodeClickInfo.id
       const form = this.form
       for(const key in form) {
         curForm[key] = form[key]
@@ -229,14 +212,19 @@ export default {
         })
       } else if (code === 200) {
         this.dialogFormVisible = false
-        this.$nextTick(() => {
-          this.$refs.form.resetFields()
-        })
+        this.MenuTree()
+        // this.$nextTick(() => {
+        //   this.$refs.form.resetFields()
+        // })
          this.$message.success('添加成功')
       }
       /* eslint-disable */
       console.log('data', data, this.form)
     }
+  },
+  created() {
+    this.getMenuTree()
+    this.getListByPid()
   }
 }
 </script>
