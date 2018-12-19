@@ -1,7 +1,9 @@
 import Vue from 'vue'
-import ElementUI from 'element-ui'
 
-import "normalize.css"
+import "normalize.css/normalize.css"
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+
 import '@/assets/styl/index.styl'
 // theme
 import '@/theme/element-#41B883/index.css'

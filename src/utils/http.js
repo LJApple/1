@@ -13,8 +13,6 @@ const http = axios.create({
 http.interceptors.request.use(
   config => {
     const token = getToken()
-    /* eslint-disable */
-    console.log('getToken', token)
     if (token) {
       config.headers['Authorization'] = token
     }
