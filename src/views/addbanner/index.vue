@@ -16,6 +16,7 @@
         <el-button type="primary" @click="clickAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
         <el-button type="primary"><i class="el-icon-edit el-icon--left"></i>编辑</el-button>
         <el-button type="primary" @click="delMenu"><i class="el-icon-delete el-icon--left"></i>删除</el-button>
+        <el-button type="primary" @click="delMenu"><i class="el-icon-delete el-icon--left"></i>功能授权</el-button>
       </div>
       <el-table
         class="table"
@@ -40,6 +41,7 @@
           <el-table-column :key="item.menuId"
           :label="item.label"
           :prop="item.prop"
+          width="150"
           >
           <template slot-scope="scope">
             <!-- <el-radio class="radio" v-model="scope.row." label="选中" @change.native="getCurrentRow(scope.$index)" >&nbsp;</el-radio> -->
@@ -223,8 +225,8 @@ export default {
     },
     // 删除菜单
     async delMenu() {
-      const { data, code, message } = await delMenu(this.nodeClickInfo.id)
-      if (code === 200) {
+      const { data, success, message } = await delMenu(this.nodeClickInfo.id)
+      if (success) {
         this.$message.success('删除菜单成功')
         this.$refs.tree.remove(this.nodeClickInfo.id)
         this.tableData.splice(this.selectRowIndex, 1)
@@ -254,7 +256,7 @@ export default {
 .tree
   display flex
   .t-left
-    width 300px
+    min-width 200px
     margin-right 10px
   .t-right
     width 100%
