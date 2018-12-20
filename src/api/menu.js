@@ -3,7 +3,7 @@ import http from '@/utils/http'
 // 获取菜单
 export function GetMenuAll() {
   return http({
-    url: '/Menu/Info',
+    url: '/Menu/LeftTree',
     method: 'get'
   })
 }

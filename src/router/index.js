@@ -16,7 +16,7 @@ export const constantRouterMap = [
     component: _import('login/index')
   },
   {
-    path: '/dashboard',
+    path: '',
     component: Layout,
     children: [{
       path: 'dashboard',

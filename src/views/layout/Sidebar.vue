@@ -18,7 +18,7 @@
 import { mapGetters } from 'vuex'
 import sidebarItem from './SidebarItem'
 import { GetMenuAll } from '@/api/menu'
-import _import from '@/utils/import'
+// import _import from '@/utils/import'
 export default {
   name: 'Sidebar',
   data() {
@@ -48,20 +48,24 @@ export default {
     // 获取菜单
     async GetMenuAll() {
       const { data } = await GetMenuAll()
-      this.permission_routers = [
-        {
-            path: '',
-            children: [{
-              path: 'addbanner',
-              name: 'addbanner',
-              component: _import('addbanner/index'),
-              meta: {
-                title: 'addbanner',
-                icon: 'dashboard'
-              }
-            }]
-        }
-      ]
+      // for (const [index, item] of data.entries()) {
+      //   if (item.children.length === 0)  delete data[index]['children']
+      // }
+      this.permission_routers = data
+      // this.permission_routers = [
+      //   {
+      //       path: '',
+      //       children: [{
+      //         path: 'addbanner',
+      //         name: 'addbanner',
+      //         component: _import('addbanner/index'),
+      //         meta: {
+      //           title: 'addbanner',
+      //           icon: 'dashboard'
+      //         }
+      //       }]
+      //   }
+      // ]
       // this.permission_routers = [
       //   {
       //       path: 'dashboard',

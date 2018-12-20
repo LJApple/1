@@ -4,20 +4,18 @@
     <template v-for="item in routes">
       <!-- 单级 -->
       <router-link 
-        v-if="onlyOneShowingChildren(item.children) && 
-          !item.children[0].children && 
-          !item.alwaysShow"
-        :key="item.children[0].name"
-        :to="item.path+'/'+item.children[0].path">
-        <el-menu-item :index="item.path + '/' + item.children[0].path">
+        v-if="!item.children.length"
+        :key="item.name"
+        :to="item.path">
+        <el-menu-item :index="item.path">
           <icon
-            v-if="item.children[0].meta && item.children[0].meta.icon" 
-            :name="item.children[0].meta.icon" 
+            v-if="item.meta && item.meta.icon" 
+            :name="item.meta.icon" 
             :scale="2">
           </icon>
           <span slot="title"
-            v-if="item.children[0].meta && item.children[0].meta.title">
-            {{getTitle(item.children[0].meta.title)}}
+            v-if="item.meta && item.meta.title">
+            {{getTitle(item.meta.title)}}
           </span>
         </el-menu-item>
       </router-link>
@@ -49,9 +47,9 @@
 
           <router-link
             v-else
-            :to="item.path+'/'+child.path"
+            :to="child.path"
             :key="child.name">
-            <el-menu-item :index="item.path+'/'+child.path">
+            <el-menu-item :index="child.path">
               <icon 
                 v-if="child.meta && child.meta.icon"
                 :name="child.meta.icon"

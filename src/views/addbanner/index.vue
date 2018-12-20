@@ -14,7 +14,7 @@
       <div class="tr-btn">
         <el-input class="lv-input marginR10" v-model="input" placeholder="请输入内容"></el-input>
         <el-button type="primary" @click="clickAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
-        <el-button type="primary" @click="upadteMenu"><i class="el-icon-edit el-icon--left"></i>编辑</el-button>
+        <el-button type="primary" @click="getMenuInfo"><i class="el-icon-edit el-icon--left"></i>编辑</el-button>
         <el-button type="primary" @click="delMenu"><i class="el-icon-delete el-icon--left"></i>删除</el-button>
         <el-button type="primary" @click="getButtonList"><i class="el-icon-delete el-icon--left"></i>功能授权</el-button>
       </div>
@@ -68,7 +68,7 @@
     :visible.sync="dialogFormVisible" width="500px">
       <el-form ref="form" :model="form">
         <el-form-item label="上级菜单" class="selectTree">
-          <select-tree @selected="selectedId" width="300" :options="options" v-model="selected" />
+          <select-tree @selected="selectedId" width="300" :options="nodeData" v-model="selected" />
         </el-form-item>
         <el-form-item :label="$t('views.addbanner.menuName')" :label-width="formLabelWidth">
           <el-input class="lv-input300" ref="labelInput" v-model="form.menuName" autocomplete="off"></el-input>
@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { addMenu, getMenuTree, getListByPid, delMenu, getMenuButtonList, postButtonList, delButtonList } from '@/api/menu'
+import { addMenu, getMenuTree, getListByPid, delMenu, getMenuButtonList, postButtonList, delButtonList, getMenuInfo, editMenu } from '@/api/menu'
 import SelectTree from '@/components/selectTree'
 export default {
   name: 'dashboard',
@@ -174,9 +174,7 @@ export default {
       
       // 选择树
        // 默认选中值
-      selected: '',
-      // 数据列表
-      options: []
+      selected: ''
     }
   },
   methods: {
@@ -205,7 +203,8 @@ export default {
     // 获取树结构菜单
     async getMenuTree() {
       const {data, code} = await getMenuTree()
-      if (code === 200) this.nodeData = this.options = data
+      if (code === 200) this.nodeData = data
+      console.log('this.nodeData', this.nodeData)
     },
     // 新增点击事件
     clickAdd() {
@@ -228,7 +227,7 @@ export default {
     },
     // 添加菜单
     async summitAddBanner() {
-      if (!this.form.parentId && this.nodeData.length) return this.$alert('请选中上级菜单', '提示', {confirmButtonText: '确定'})
+      // if (!this.form.parentId && this.nodeData.length) return this.$alert('请选中上级菜单', '提示', {confirmButtonText: '确定'})
       const { code, message } = await addMenu(this.form)
       if (code === 500) {
          this.$message({
@@ -305,8 +304,22 @@ export default {
         }
       }
     },
+    // 获取菜单信息
+    async getMenuInfo() {
+      if (!this.nodeClickInfo) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
+      this.dialogFormVisible = true
+      const {success, data} = await getMenuInfo(this.nodeClickInfo.id)
+      if (success) {
+        this.selected = data.parentId
+        console.log('this.selected', this.selected)
+        this.form = data
+      }
+    },
     // 编辑菜单
-    async upadteMenu() {
+    async eidtMenu() {
+      const menuId = this.nodeClickInfo.id
+      /* eslint-disable */
+      const {success} = await editMenu(menuId, this.form)
     }
   },
   created() {

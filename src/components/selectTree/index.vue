@@ -55,7 +55,7 @@ export default {
       type: Object,
       required: false,
       default: () => ({
-        parent: 'id',
+        parent: 'pId',
         value: 'id',
         label: 'name',
         children: 'children'
@@ -75,7 +75,8 @@ export default {
     },
     // 若非树状结构，则转化为树状结构数据
     data() {
-      return this.dataType ? this.options : this.switchTree()
+      console.log('this.options', this.options)
+      return this.dataType ? this.options : this.options
     }
   },
   watch: {
@@ -150,19 +151,23 @@ export default {
         if (temp[this.props.children]) {
           stark = stark.concat(temp[this.props.children])
         }
+        console.log('buildTree', tree)
         if (temp[this.props.value] === id) {
+          /* eslint-disable */
           return temp[this.props.label]
         }
       }
       return ''
     },
     // 将一维的扁平数组转换为多层级对象
-    buildTree(data, id = '0') {
+    buildTree(data, id) {
+      console.log('buildTree', data)
       const fa = (parentId) => {
         const temp = []
         for (let i = 0; i < data.length; i++) {
           const n = data[i]
           if (n[this.props.parent] === parentId) {
+            /* eslint-disable */
             n.children = fa(n.rowGuid)
             temp.push(n)
           }
