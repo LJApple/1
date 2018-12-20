@@ -46,6 +46,8 @@ export const constantRouterMap = [
 ]
 
 export const router = new VueRouter({
+  mode : 'history',
+  base: '/system/',  //添加的地方
   routes: constantRouterMap,
   scrollBehavior: () => ({
     y: 0

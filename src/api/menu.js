@@ -36,9 +36,17 @@ export function delMenu(id) {
 // 修改菜单
 export function editMenu(menuId, param) {
   return http({
-    url: `/Menu/EditMenu/${menuId}`,
+    url: `/Menu/Edit/${menuId}`,
     method: 'put',
     data: param
+  })
+}
+
+// 菜单信息
+export function getMenuInfo(id) {
+  return http({
+    url: `/Menu/Info/${id}`,
+    method: 'get'
   })
 }
 // 根据上级菜单Id获取下级菜单列表
@@ -53,7 +61,25 @@ export function getListByPid(pId) {
 // 获取button功能列表
 export function getMenuButtonList(menuId) {
   return http({
-    url: `/Menu/GetMenuButtonList/${menuId}`,
+    url: `/Menu/ButtonList/${menuId}`,
     method: 'get'
+  })
+}
+
+// 绑定button功能
+export function postButtonList(data) {
+  return http({
+    url: `/Menu/BindButton`,
+    method: 'post',
+    data
+  })
+}
+
+// 取消绑定button功能
+export function delButtonList(data) {
+  return http({
+    url: `/Menu/CancelBindButton`,
+    method: 'DELETE',
+    data
   })
 }
