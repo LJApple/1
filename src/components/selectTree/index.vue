@@ -75,8 +75,7 @@ export default {
     },
     // 若非树状结构，则转化为树状结构数据
     data() {
-      console.log('this.options', this.options)
-      return this.dataType ? this.options : this.options
+      return this.dataType ? this.options : this.switchTree()
     }
   },
   watch: {
@@ -99,10 +98,12 @@ export default {
       // 输入框显示值
       labelModel: '',
       // 实际请求传值
-      idModel: '0'
+      idModel: ''
     }
   },
   created() {
+    /* eslint-disable */
+    console.log('this.option', this.options)
     // 检测输入框原有值并显示对应 label
     if (this.value) {
       this.labelModel = this.queryTree(this.data, this.value)
@@ -151,9 +152,7 @@ export default {
         if (temp[this.props.children]) {
           stark = stark.concat(temp[this.props.children])
         }
-        console.log('buildTree', tree)
         if (temp[this.props.value] === id) {
-          /* eslint-disable */
           return temp[this.props.label]
         }
       }
@@ -161,13 +160,11 @@ export default {
     },
     // 将一维的扁平数组转换为多层级对象
     buildTree(data, id) {
-      console.log('buildTree', data)
       const fa = (parentId) => {
         const temp = []
         for (let i = 0; i < data.length; i++) {
           const n = data[i]
           if (n[this.props.parent] === parentId) {
-            /* eslint-disable */
             n.children = fa(n.rowGuid)
             temp.push(n)
           }

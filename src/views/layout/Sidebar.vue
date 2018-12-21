@@ -91,8 +91,6 @@ export default {
       //       ]
       //   }
       // ]
-      /* eslint-disable */
-      console.log(data, this.permission_routers)
     }
   }
 }

@@ -4,7 +4,7 @@
       <el-tree
         :data="nodeData"
         node-key="id"
-        ref="tree"
+        ref="leftTree"
         :draggable='draggable'
         @node-click = 'nodeClick'
         :props="defaultProps">
@@ -100,7 +100,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="summitAddBanner()">确 定</el-button>
+        <el-button type="primary" v-if="isSummit === true" @click="summitAddBanner()">确 定</el-button>
+        <el-button type="primary" v-else @click="eidtMenu()">确 定</el-button>
       </div>
     </el-dialog>
      <!-- dialog 功能列表-->
@@ -170,20 +171,19 @@ export default {
       draggable: true, // 是否开启拖拽菜单
       nodeClickInfo: '',
       selectRowIndex: '', // 选中的行
+      selectRowId: '', // 选中行的id
       btnList: [], // 功能btn列表
-      
-      // 选择树
-       // 默认选中值
-      selected: ''
+      selected: '',
+      isSummit: true // 是否是添加菜单
     }
   },
   methods: {
     // table
     select(selection) {
       if (selection.length)  {
-        this.$refs.tree.setCheckedKeys([selection[0].menuId])
+        this.$refs.leftTree.setCheckedKeys([selection[0].menuId])
       } else {
-        this.$refs.tree.setCheckedKeys([])
+        this.$refs.leftTree.setCheckedKeys([])
       }
     },
     // 获取table
@@ -204,11 +204,14 @@ export default {
     async getMenuTree() {
       const {data, code} = await getMenuTree()
       if (code === 200) this.nodeData = data
-      console.log('this.nodeData', this.nodeData)
+      /* eslint-disable */
+      console.log('this.nodeData', this.nodeData, data)
     },
     // 新增点击事件
     clickAdd() {
       this.dialogFormVisible = true
+      this.isSummit = true
+      this.resetFields()
     },
     resetFields() {
       this.form = {
@@ -240,7 +243,6 @@ export default {
         this.dialogFormVisible = false
         this.getMenuTree()
         this.getListByPid()
-        this.resetFields()
         this.$message.success('添加菜单成功')
       }
     },
@@ -251,10 +253,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        const { success, message } = await delMenu(this.nodeClickInfo.id)
+        const { success, message } = await delMenu(this.selectRowId)
         if (success) {
           this.$message.success('删除菜单成功')
-          this.$refs.tree.remove(this.nodeClickInfo.id)
+          this.$refs.leftTree.remove(this.selectRowId)
           this.tableData.splice(this.selectRowIndex, 1)
         } else {
         this.$message({
@@ -273,7 +275,8 @@ export default {
     },
     getMenuId(menuId, index) {
       if (!this.nodeClickInfo) this.nodeClickInfo = {}
-      this.nodeClickInfo.id = menuId
+      // this.nodeClickInfo.id = menuId
+      this.selectRowId = menuId
       this.selectRowIndex = index
     },
     selectedId(data) {
@@ -306,28 +309,24 @@ export default {
     },
     // 获取菜单信息
     async getMenuInfo() {
-      if (!this.nodeClickInfo) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
+      if (!this.selectRowId) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
       this.dialogFormVisible = true
-      const {success, data} = await getMenuInfo(this.nodeClickInfo.id)
+      this.isSummit = false
+      const {success, data} = await getMenuInfo(this.selectRowId)
       if (success) {
         this.selected = data.parentId
-        console.log('this.selected', this.selected)
         this.form = data
       }
     },
     // 编辑菜单
     async eidtMenu() {
-      const menuId = this.nodeClickInfo.id
-      /* eslint-disable */
-      const {success} = await editMenu(menuId, this.form)
+      const {success} = await editMenu(this.selectRowId, this.form)
+      if (success)  this.$message.success('编辑菜单成功')
     }
   },
   created() {
     this.getMenuTree()
     this.getListByPid()
-  },
-  mounted() {
-    this.restaurants = this.nodeData
   }
 }
 </script>
