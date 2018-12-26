@@ -8,6 +8,8 @@ export const CLOSE_OTHER_TAG = 'CLOSE_OTHER_TAG'
 export const CLOSE_ALL_TAG = 'CLOSE_ALL_TAG'
 export const SET_VIEWS = 'SET_VIEWS'
 
+// routes
+export const SET_ROUTES = 'SET_ROUTES'
 
 // user
 export const SET_TOKEN = 'SET_TOKEN'

@@ -42,6 +42,20 @@ export const constantRouterMap = [
         noCache: true
       }
     }]
+  },
+  {
+    path: '',
+    component: Layout,
+    children: [{
+      path: 'sysRoles',
+      name: 'sysRoles',
+      component: _import('sysRoles/index'),
+      meta: {
+        title: 'sysRoles',
+        icon: 'dashboard',
+        noCache: true
+      }
+    }]
   }
 ]
 

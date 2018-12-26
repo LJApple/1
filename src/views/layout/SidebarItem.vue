@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar-wrap">
     <!-- <template v-for="item in routes" v-if="!item.hidden && item.children"> -->
-    <template v-for="item in routes">
+    <template v-for="(item, index) in routes">
       <!-- 单级 -->
       <router-link 
         v-if="!item.children.length"
@@ -24,7 +24,7 @@
       <el-submenu
         class="sidebar-wrap__menu"
         v-else 
-        :key="item.name"
+        :key="index"
         :index="item.name || item.path">
         <template slot="title">
           <icon 
@@ -37,18 +37,18 @@
             <!-- {{sliderState === 'full' ? getTitle(item.meta.title) : ''}} -->
           </span>
         </template>
-        <template v-for="child in item.children">
+        <template v-for="(child, index) in item.children">
           <!-- 二级菜单 -->
           <sidebar-item 
             v-if="child.children && child.children.length > 0" 
             :routes="[child]" 
-            :key="child.path">
+            :key="index">
           </sidebar-item>
 
           <router-link
             v-else
             :to="child.path"
-            :key="child.name">
+            :key="index">
             <el-menu-item :index="child.path">
               <icon 
                 v-if="child.meta && child.meta.icon"

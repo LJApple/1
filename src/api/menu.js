@@ -1,7 +1,7 @@
 import http from '@/utils/http'
 
 // 获取菜单
-export function GetMenuAll() {
+export function getMenuAll() {
   return http({
     url: '/Menu/LeftTree',
     method: 'get'

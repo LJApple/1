@@ -240,13 +240,10 @@ export default {
           showClose: true
         })
       } else if (code === 200) {
-        const res = await this.$store.dispatch('getMenuAll')
-        if (res.success) { 
-          this.dialogFormVisible = false
-          this.getMenuTree()
-          this.getListByPid()
-          this.$message.success('添加菜单成功')
-        }
+        this.dialogFormVisible = false
+        this.getMenuTree()
+        this.getListByPid()
+        this.$message.success('添加菜单成功')
       }
     },
     // 删除菜单
@@ -258,12 +255,9 @@ export default {
       }).then(async () => {
         const { success, message } = await delMenu(this.selectRowId)
         if (success) {
-          const res = await this.$store.dispatch('getMenuAll')
-          if (res.success) { 
-            this.$message.success('删除菜单成功')
-            this.$refs.leftTree.remove(this.selectRowId)
-            this.tableData.splice(this.selectRowIndex, 1)
-          }
+          this.$message.success('删除菜单成功')
+          this.$refs.leftTree.remove(this.selectRowId)
+          this.tableData.splice(this.selectRowIndex, 1)
         } else {
         this.$message({
           message,
@@ -327,13 +321,7 @@ export default {
     // 编辑菜单
     async eidtMenu() {
       const {success} = await editMenu(this.selectRowId, this.form)
-      if (success) {
-        const res = await this.$store.dispatch('getMenuAll')
-        if (res.success) {
-          this.$message.success('编辑菜单成功')
-          this.dialogFormVisible = false
-        }
-      }
+      if (success)  this.$message.success('编辑菜单成功')
     }
   },
   created() {

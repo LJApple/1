@@ -7,7 +7,8 @@ export default {
   route: {
     systemManager: '系统管理',
     dashboard: '首页',
-    addbanner: '添加菜单'
+    addbanner: '添加菜单',
+    sysRoles: '系统角色'
   },
   app: {
     switchlang: '切换语言成功',
