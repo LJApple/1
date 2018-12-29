@@ -231,15 +231,8 @@ export default {
     // 添加菜单
     async summitAddBanner() {
       // if (!this.form.parentId && this.nodeData.length) return this.$alert('请选中上级菜单', '提示', {confirmButtonText: '确定'})
-      const { code, message } = await addMenu(this.form)
-      if (code === 500) {
-         this.$message({
-          message,
-          type: 'error',
-          duration: 1000,
-          showClose: true
-        })
-      } else if (code === 200) {
+      const { code, message, success } = await addMenu(this.form)
+      if (success) {
         const res = await this.$store.dispatch('getMenuAll')
         if (res.success) { 
           this.dialogFormVisible = false
