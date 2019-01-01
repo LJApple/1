@@ -16,7 +16,7 @@ const router = {
                 if (response.data) {
                     commit(SET_ROUTES, response.data)
                 }
-                return response
+                return response.data
             } catch (error) {
                 /* eslint-disable */
                 console.error('getMenuAll', error)  

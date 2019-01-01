@@ -111,10 +111,10 @@
         @click="bindBtn(item.buttonId)" type="primary">{{item.buttonName}}
         <i class="el-icon-success el-icon--right" :class="item.isCheck === false ? 'checkColor' : ''"></i></el-button>
       </div>
-      <div slot="footer" class="dialog-footer">
+      <!-- <div slot="footer" class="dialog-footer">
         <el-button @click="dialogBtnVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogBtnVisible = false">确 定</el-button>
-      </div>
+      </div> -->
     </el-dialog>
   </div>
 </template>

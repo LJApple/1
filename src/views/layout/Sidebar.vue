@@ -26,14 +26,14 @@ export default {
       bg: '#556d84',
       tc: '#fff',
       atc: '#41B883',
-      permission_routers: []
+      routes: []
     }
   },
   components: {
     sidebarItem
   },
   computed: {
-    ...mapGetters(['sidebar', 'routes']),
+    ...mapGetters(['sidebar']),
     isCollapse() {
       if (this.sidebar.sliderState === 'full') {
         return false
@@ -41,9 +41,8 @@ export default {
       return true
     }
   },
-  created() {
-    /* eslint-disable */
-    console.log('routes', this.routes)
+  async created() {
+    this.routes = await this.$store.dispatch('getMenuAll')
   }
 }
 </script>
