@@ -92,12 +92,12 @@ export default {
   name: 'login',
   components: {},
   mounted() {
-    this.$notify({
-      title: '登陆提示',
-      message: '用户名 admin 密码随意输入',
-      position: 'top-left',
-      duration: 0
-    })
+    // this.$notify({
+    //   title: '登陆提示',
+    //   message: '用户名 admin 密码随意输入',
+    //   position: 'top-left',
+    //   duration: 0
+    // })
   },
   data() {
     const validobj = {
@@ -194,8 +194,8 @@ export default {
             this.loading = false
             if (response.data) {
               this.$notify.closeAll()
-              const res =  await this.$store.dispatch('getMenuAll')
-              if (res.success)  this.$router.push({ path: '/addbanner' })
+              const data =  await this.$store.dispatch('getMenuAll')
+              if (data)  this.$router.push({ path: '/addbanner' })
               // this.$router.push({ path: '/addbanner' })
             } else {
               this.$message({
