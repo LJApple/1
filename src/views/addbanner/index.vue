@@ -196,7 +196,7 @@ export default {
     },
     // table
     nodeClick(data) {
-      if (!data.children.length) return
+      // if (!data.children.length) return
       this.nodeClickInfo = data
       this.getListByPid()
     },
