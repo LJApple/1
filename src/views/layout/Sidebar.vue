@@ -42,7 +42,8 @@ export default {
     }
   },
   async created() {
-    this.routes = await this.$store.dispatch('getMenuAll')
+    const res = await this.$store.dispatch('getMenuAll')
+    this.routes = res.data
   }
 }
 </script>

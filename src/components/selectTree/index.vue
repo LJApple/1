@@ -117,7 +117,7 @@ export default {
     // 单击节点
     onClickNode(node) {
       this.labelModel = node[this.props.label]
-      this.idModel = node[this.props.parent]
+      this.idModel = node[this.props.value]
       this.onCloseTree()
     },
     // 偏平数组转化为树状层级结构
