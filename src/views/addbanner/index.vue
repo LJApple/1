@@ -313,8 +313,10 @@ export default {
       this.isSummit = false
       const {success, data} = await getMenuInfo(this.selectRowId)
       if (success) {
+        console.log('data', data)
         this.selected = data.parentId
         this.form = data
+        console.log('this.form', this.form)
       }
     },
     // 编辑菜单
@@ -322,10 +324,13 @@ export default {
       const {success} = await editMenu(this.selectRowId, this.form)
       if (success) {
         const res = await this.$store.dispatch('getMenuAll')
+        console.log('res', res.success)
         if (res.success) {
           this.$message.success('编辑菜单成功')
-          this.dialogFormVisible = false
+        } else {
+           this.$message.success('操作失败')
         }
+        this.dialogFormVisible = false
       }
     }
   },
