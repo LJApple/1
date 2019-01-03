@@ -18,7 +18,7 @@
       >
         <el-table-column width="50">
           <template slot-scope="scope1">
-            <el-radio class="singleRadio" v-model="radio" :label="scope1.row.menuId" @change.native="clickSelectRow(scope1.row.roleId)"></el-radio>
+            <el-radio class="singleRadio" v-model="radio" :label="scope1.row.roleId" @change.native="clickSelectRow(scope1.row.roleId, scope1.$index)"></el-radio>
           </template>
         </el-table-column>
         <template v-for="item in tableThead">
@@ -27,21 +27,6 @@
           :prop="item.prop"
           min-width="150"
           >
-          <!-- <template slot-scope="scope">
-            <el-switch
-              v-if="scope.row[item.prop] === true || 
-              scope.row[item.prop] === false"
-              v-model="scope.row[item.prop]"
-              active-text="是"
-              inactive-text="否">
-            </el-switch>
-            <div v-else-if="scope.row[item.prop] === 0 ||
-              scope.row[item.prop] === 1">
-              <el-radio v-model="scope.row[item.prop]" :label="0">当前页面嵌套</el-radio>
-              <el-radio v-model="scope.row[item.prop]" :label="1">打开新页面</el-radio>
-            </div>
-            <span v-else>{{scope.row[item.prop]}}</span>
-          </template> -->
            <template slot-scope="scope">
             <div v-if="scope.row[item.prop] === true">是</div>
             <div v-else-if="scope.row[item.prop] === false">否</div>
@@ -69,7 +54,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" v-if="isSummit === true" @click="summitAddBanner()">确 定</el-button>
+        <el-button type="primary" v-if="isSummit === true" @click="clickSummit()">确 定</el-button>
         <el-button type="primary" v-else @click="eidtMenu()">确 定</el-button>
       </div>
     </el-dialog>
@@ -89,7 +74,7 @@
 </template>
 
 <script>
-import { getRoleList } from '@/api/roleSystem'
+import { getRoleList, addRole, delRole, getMenuButtonAuthList, getMenuAuthList } from '@/api/roleSystem'
 export default {
   name: 'sysRoles',
   components: {},
@@ -123,23 +108,34 @@ export default {
     resetFields() {
       const obj = {}
       for (const item of this.tableThead) {
-        if (item.tagType === 'radio') {
-          obj[item.prop] = true
-        } else {
-          obj[item.prop] = ''
+        if(!item.hidden) {
+          if (item.tagType === 'radio') {
+            obj[item.prop] = true
+          } else {
+            obj[item.prop] = ''
+          }
         }
       }
       this.form = {...this.form, ...obj}
-      // this.form = {
-      //   roleName: '',
-      //   isShow: true
-      // }
-      /* eslint-disable */
-      console.log('this.form', this.form, typeof this.form)
     },
     // 获取--获取角色列表
     async getRoleList() {
       const {data, success, message} = await getRoleList()
+      if (success) {
+        this.tableData = data
+      } else {
+        this.$message({
+          message,
+          type: 'error',
+          duration: 1000,
+          isDisable: true,
+          showClose: true
+        })
+      }
+    },
+    // 获取--授权菜单列表
+    async getMenuAuthList() {
+      const {data, success, message} = await getMenuAuthList()
       if (success) {
         this.tableData = data
       } else {
@@ -172,18 +168,18 @@ export default {
     },
     // 点击--删除
     async clickDel() {
+      if (!this.selectRowId) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
       this.$confirm('菜单将会删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
         /* eslint-disable */
-        const { success, message } = await delMenu(this.selectRowId)
+        const { success, message } = await delRole({id: this.selectRowId})
         if (success) {
           const res = await this.$store.dispatch('getMenuAll')
           if (res.success) { 
             this.$message.success('删除菜单成功')
-            this.$refs.leftTree.remove(this.selectRowId)
             this.tableData.splice(this.selectRowIndex, 1)
           }
         } else {
@@ -194,24 +190,43 @@ export default {
           showClose: true
         })
       }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })     
       })
     },
     // 点击--功能授权
     async clickButtonAut() {
-      if (!this.nodeClickInfo) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (!this.selectRowId) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
       this.dialogBtnVisible = true
-      // const { data, success } = await getMenuButtonList(this.nodeClickInfo.id)
+      const { success, message } = await getMenuButtonAuthList({roleId: this.selectRowId})
+      if (!success) {
+         this.$message({
+          message,
+          type: 'error',
+          duration: 1000,
+          showClose: true
+        })
+      }
     },
     // 点击--选中一行
-    clickSelectRow(selection) {
-      /* eslint-disable */
-      console.log('selection', selection)
+    clickSelectRow(selectRowId, selectRowIndex) {
+      this.selectRowId = selectRowId
+      this.selectRowIndex = selectRowIndex
     },
+    // 点击--新增提交表达
+    async clickSummit() {
+      const { success, message } = await addRole(this.form)
+      if (success) {
+        this.$message.success('添加成功')
+        this.getRoleList()
+      } else {
+        this.$message({
+          message,
+          type: 'error',
+          duration: 1000,
+          showClose: true
+        })
+      }
+      this.dialogFormVisible = false
+    }
   },
   created() {
     this.resetFields()

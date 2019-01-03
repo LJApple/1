@@ -194,8 +194,8 @@ export default {
             this.loading = false
             if (response.data) {
               this.$notify.closeAll()
-              const data =  await this.$store.dispatch('getMenuAll')
-              if (data)  this.$router.push({ path: '/addbanner' })
+              const data = await this.$store.dispatch('getMenuAll')
+              if (data) this.$router.push({ path: '/dashboard' })
               // this.$router.push({ path: '/addbanner' })
             } else {
               this.$message({

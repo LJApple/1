@@ -1,5 +1,5 @@
 <template>
-  <div class="tags-view">
+  <div class="tags-view" v-if="isShow === true">
     <div ref="tagsView"
       class="tags-outer" 
       @mousewheel="handlescroll"
@@ -44,7 +44,8 @@ export default {
     return {
       tagsScrollLeft: 0,
       tags: [],
-      currentViewName: ''
+      currentViewName: '',
+      isShow: true
     }
   },
   mounted() {
@@ -93,10 +94,19 @@ export default {
         )
       }
     },
-    addViewTags() {
+    async addViewTags() {
       const route = this.$route
+      /* eslint-disable */
+      console.log('route.name', route.name)
       if (!route.name) {
         return false
+      }
+      if (route.name === 'dashboard') {
+        await this.$store.dispatch('closeAllView')
+        this.isShow = false
+        return
+      } else {
+        this.isShow = true
       }
       this.currentViewName = route.name
       this.$store.dispatch('addVisitedTag', route)
@@ -116,7 +126,7 @@ export default {
           this.$router.push(prevTag.path)
           this.currentViewName = prevTag.name
         } else {
-          this.$router.push('/')
+          this.$router.push('/dashboard')
           this.currentViewName = 'dashboard'
         }
       }
@@ -139,7 +149,7 @@ export default {
           break
         case 'closeAll':
           await this.$store.dispatch('closeAllView')
-          this.$router.push('/')
+          this.$router.push('/dashboard')
           this.currentViewName = 'dashboard'
           break
       }

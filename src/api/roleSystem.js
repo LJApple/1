@@ -37,7 +37,7 @@ export function editRole({ roleName, isDisable, isShow, sort, remark, id }) {
 // 删除管理员角色
 export function delRole({ id }) {
     return http({
-      url: `${base}Del${id}`,
+      url: `${base}Del/${id}`,
       method: 'DELETE'
     })
 }
