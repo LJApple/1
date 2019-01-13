@@ -8,7 +8,8 @@ export default {
     systemManager: '系统管理',
     dashboard: '首页',
     addbanner: '添加菜单',
-    sysRoles: '系统角色'
+    sysRoles: '系统角色',
+    compRoles: '公司角色'
   },
   app: {
     switchlang: '切换语言成功',

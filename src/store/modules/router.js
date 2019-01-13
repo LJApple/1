@@ -1,4 +1,4 @@
-import { getMenuAll } from '@/api/menu'
+import { getMenuAll } from '@/api/modules/menu'
 import { SET_ROUTES } from '../mutaion-types'
 const router = {
     state: {

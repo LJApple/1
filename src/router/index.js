@@ -56,6 +56,18 @@ export const constantRouterMap = [
         noCache: true
       }
     }]
+  },
+  {
+    path: '',
+    component: Layout,
+    children: [{
+      path: 'compRoles',
+      name: 'compRoles',
+      component: _import('compRoles/index'),
+      meta: {
+        title: 'compRoles'
+      }
+    }]
   }
 ]
 

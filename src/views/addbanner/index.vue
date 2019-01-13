@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { addMenu, getMenuTree, getListByPid, delMenu, getMenuButtonList, postButtonList, delButtonList, getMenuInfo, editMenu } from '@/api/menu'
+import Api from '@/api/index'
 import SelectTree from '@/components/selectTree'
 export default {
   name: 'dashboard',
@@ -189,7 +189,7 @@ export default {
     // 获取table
     async getListByPid() {
       const pId = !this.nodeClickInfo ? '' : this.nodeClickInfo.id
-      const {data, code} = await getListByPid(pId)
+      const {data, code} = await Api.getListByPid(pId)
       if (code === 200 && data) {
         this.tableData = data
       }
@@ -202,7 +202,7 @@ export default {
     },
     // 获取树结构菜单
     async getMenuTree() {
-      const {data, code} = await getMenuTree()
+      const {data, code} = await Api.getMenuTree()
       if (code === 200) this.nodeData = data
       /* eslint-disable */
       console.log('this.nodeData', this.nodeData, data)
@@ -231,7 +231,7 @@ export default {
     // 添加菜单
     async summitAddBanner() {
       // if (!this.form.parentId && this.nodeData.length) return this.$alert('请选中上级菜单', '提示', {confirmButtonText: '确定'})
-      const { code, message, success } = await addMenu(this.form)
+      const { code, message, success } = await Api.addMenu(this.form)
       if (success) {
         const res = await this.$store.dispatch('getMenuAll')
         if (res.success) { 
@@ -249,7 +249,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        const { success, message } = await delMenu(this.selectRowId)
+        const { success, message } = await Api.delMenu(this.selectRowId)
         if (success) {
           const res = await this.$store.dispatch('getMenuAll')
           if (res.success) { 
@@ -285,7 +285,7 @@ export default {
     async getButtonList() {
       if (!this.nodeClickInfo) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
       this.dialogBtnVisible = true
-      const { data, success } = await getMenuButtonList(this.nodeClickInfo.id)
+      const { data, success } = await Api.getMenuButtonList(this.nodeClickInfo.id)
       if (success) this.btnList = data
     },
     // 选择功能列表
@@ -296,11 +296,11 @@ export default {
         if (item.buttonId === buttonId) {
           if (!item.isCheck) {
             // 选中
-            const {success} = await postButtonList({menuId,buttonId})
+            const {success} = await Api.postButtonList({menuId,buttonId})
             if (success) item.isCheck = true
           } else {
             // 取消选中
-            const {success} = await delButtonList({menuId,buttonId})
+            const {success} = await Api.delButtonList({menuId,buttonId})
             if (success) item.isCheck = false
           }
         }
@@ -311,7 +311,7 @@ export default {
       if (!this.selectRowId) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
       this.dialogFormVisible = true
       this.isSummit = false
-      const {success, data} = await getMenuInfo(this.selectRowId)
+      const {success, data} = await Api.getMenuInfo(this.selectRowId)
       if (success) {
         console.log('data', data)
         this.selected = data.parentId
@@ -321,7 +321,7 @@ export default {
     },
     // 编辑菜单
     async eidtMenu() {
-      const {success} = await editMenu(this.selectRowId, this.form)
+      const {success} = await Api.editMenu(this.selectRowId, this.form)
       if (success) {
         const res = await this.$store.dispatch('getMenuAll')
         console.log('res', res.success)

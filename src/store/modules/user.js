@@ -1,4 +1,4 @@
-import { login } from '@/api/login'
+import { login } from '@/api/modules/login'
 import { setToken } from '@/utils/auth'
 import Cookies from 'js-cookie'
 import * as types from '../mutaion-types'

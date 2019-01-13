@@ -8,6 +8,8 @@
         <el-button type="primary" @click="clickDel"><i class="el-icon-delete el-icon--left"></i>删除</el-button>
         <el-button type="primary" @click="clickMenuAut"><i class="el-icon-circle-check el-icon--left"></i>菜单授权</el-button>
         <el-button type="primary" @click="clickButtonAut"><i class="el-icon-circle-check el-icon--left"></i>功能授权</el-button>
+        <el-button type="primary" @click="clickDataAut"><i class="el-icon-circle-check el-icon--left"></i>数据授权</el-button>
+        <el-button type="primary" @click="clickFieldAut"><i class="el-icon-circle-check el-icon--left"></i>字段授权</el-button>
       </div>
       <el-table
         class="table"
@@ -90,7 +92,7 @@
           <el-button type="primary" @click="dialogBtnVisible = false">确 定</el-button>
       </div> -->
     </el-dialog>
-     <!-- dialog 功能列表-->
+    <!-- dialog 树授权-->
     <el-dialog title="菜单授权" :visible.sync="dialogMenuVisible">
       <div class="dialog">
         <el-tree
@@ -106,6 +108,54 @@
       <div slot="footer" class="dialog-footer">
           <el-button @click="dialogMenuVisible = false">取 消</el-button>
           <el-button type="primary" @click="clickMenuSure">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- dialog 数据授权-->
+    <el-dialog title="数据授权" :visible.sync="dialogDataVisible">
+      <div class="dialog">
+        <div class="t-left">
+          <el-tree
+            :data="nodeData"
+            node-key="id"
+            ref="leftTree"
+            :draggable='draggable'
+            @node-click = 'nodeClick'
+            :props="defaultProps">
+          </el-tree>
+        </div>
+        <div class="t-right">
+          <div class="btn-list">
+            <el-button v-for="(item, index) in btnList" :key="index"
+            @click="clickBindBtn(item.buttonId)" type="primary">{{item.buttonName}}
+            <i class="el-icon-success el-icon--right" :class="item.isCheck === false ? 'checkColor' : ''"></i></el-button>
+          </div>
+        </div>
+      </div>
+      <!-- <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogBtnVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogBtnVisible = false">确 定</el-button>
+      </div> -->
+    </el-dialog>
+    <!-- dialog 字段授权-->
+    <el-dialog title="字段授权" :visible.sync="dialogFieldVisible">
+      <div class="dialog">
+        <div class="t-left">
+          <el-tree
+            :data="nodeData"
+            node-key="id"
+            ref="leftTree"
+            :draggable='draggable'
+            @node-click = 'nodeClick'
+            :props="defaultProps">
+          </el-tree>
+        </div>
+        <div class="t-right">
+          <div class="btn-list">
+            <el-button v-for="(item, index) in btnList" :key="index"
+            @click="clickBindBtn(item.buttonId)" type="primary">{{item.buttonName}}
+            <i class="el-icon-success el-icon--right" :class="item.isCheck === false ? 'checkColor' : ''"></i></el-button>
+          </div>
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -134,6 +184,8 @@ export default {
       dialogFormVisible: false,
       dialogBtnVisible: false,
       dialogMenuVisible: false,
+      dialogDataVisible: false, // 数据授权弹窗
+      dialogFieldVisible: false, // 字段授权弹窗
       formLabelWidth: '100px',
       nodeClickInfo: '',
       selectRowIndex: '', // 选中的行
@@ -171,7 +223,7 @@ export default {
     },
     // 获取--获取角色列表
     async getRoleList() {
-      const {data, success, message} = await Api.getSysRoleList()
+      const {data, success, message} = await  Api.getComRoleList()
       if (success) {
         this.tableData = data
       } else {
@@ -186,7 +238,7 @@ export default {
     },
     // 获取--授权菜单列表
     async getMenuAuthList() {
-      const {data, success, message} = await  Api.getSysMenuAuthList({roleId: this.selectedRowInfo[0].roleId})
+      const {data, success, message} = await  Api.getComMenuAuthList({roleId: this.selectedRowInfo[0].roleId})
       if (success) {
         this.nodeData = data
         this.findTreeID(this.nodeData)
@@ -216,7 +268,7 @@ export default {
     },
     // 获取-更具点击的菜单获取功能列表
     async getMenuButtonAuthList(menuId) {
-      const { success, message, data } = await Api.getSysMenuButtonAuthList({roleId: this.selectedRowInfo[0].selectRowId, menuId})
+      const { success, message, data } = await  Api.getComMenuButtonAuthList({roleId: this.selectedRowInfo[0].selectRowId, menuId})
       if (!success) {
          this.$message({
           message,
@@ -244,7 +296,7 @@ export default {
     },
     // 点击--确定编辑
     async eidtMenu() {
-      const { success } = await  Api.editSysRole(this.selectedRowInfo[0].roleId, this.form)
+      const { success } = await  Api.editComRole(this.selectedRowInfo[0].roleId, this.form)
       if (success) {
         this.$message.success('编辑成功')
         this.getRoleList()
@@ -261,7 +313,7 @@ export default {
         type: 'warning'
       }).then(async () => {
         const { roleId } = this.selectedRowInfo[0]
-        const { success, message } = await  Api.delSysRole({id: roleId})
+        const { success, message } = await  Api.delComRole({id: roleId})
         if (success) {
           const res = await this.$store.dispatch('getMenuAll')
           if (res.success) { 
@@ -297,7 +349,7 @@ export default {
     },
     // 点击--新增提交表达
     async clickSummit() {
-      const { success, message } = await  Api.addSysRole(this.form)
+      const { success, message } = await  Api.addComRole(this.form)
       if (success) {
         this.$message.success('添加成功')
         this.getRoleList()
@@ -322,14 +374,14 @@ export default {
         if (item.buttonId === menuButtonId) {
           if (!item.isCheck) {
             // 选中
-            const {success} = await  Api.postSysMenuButtonAuth({roleId,menuButtonId})
+            const {success} = await  Api.postComMenuButtonAuth({roleId,menuButtonId})
             if (success) {
               item.isCheck = true
               this.$message.success('授权成功')
             }
           } else {
             // 取消选中
-            const {success} = await  Api.cancleSysMenuButtonAuth({roleId,menuButtonId})
+            const {success} = await  Api.cancleComMenuButtonAuth({roleId,menuButtonId})
             if (success) {
               item.isCheck = false
               this.$message.success('取消授权成功')
@@ -349,8 +401,16 @@ export default {
     async clickMenuSure() {
       this.dialogMenuVisible = false
       const menuIdArr = [...this.$refs.menuTrue.getHalfCheckedKeys(), ...this.$refs.menuTrue.getCheckedKeys()]
-      const { success } = await  Api.postSysMenuAuth({ roleId: this.selectedRowInfo[0].roleId, menuId: menuIdArr})
+      const { success } = await  Api.postComMenuAuth({ roleId: this.selectedRowInfo[0].roleId, menuId: menuIdArr})
       if (success) this.$message.success('授权成功')
+    },
+    // 点击--数据授权
+    clickDataAut() {
+      this.dialogDataVisible = true
+    },
+    // 点击--字段授权
+    clickFieldAut() {
+      this.dialogFieldVisible = true
     }
   },
   created() {
