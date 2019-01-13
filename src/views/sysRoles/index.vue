@@ -6,7 +6,8 @@
         <el-button type="primary" @click="clickAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
         <el-button type="primary" @click="clickEdit"><i class="el-icon-edit el-icon--left"></i>编辑</el-button>
         <el-button type="primary" @click="clickDel"><i class="el-icon-delete el-icon--left"></i>删除</el-button>
-        <el-button type="primary" @click="clickButtonAut"><i class="el-icon-delete el-icon--left"></i>功能授权</el-button>
+        <el-button type="primary" @click="clickMenuAut"><i class="el-icon-circle-check el-icon--left"></i>菜单授权</el-button>
+        <el-button type="primary" @click="clickButtonAut"><i class="el-icon-circle-check el-icon--left"></i>功能授权</el-button>
       </div>
       <el-table
         class="table"
@@ -14,12 +15,17 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
+        @selection-change="handleSelectionChange"
         highlight-current-row
       >
-        <el-table-column width="50">
+        <!-- <el-table-column width="50">
           <template slot-scope="scope1">
             <el-radio class="singleRadio" v-model="radio" :label="scope1.row.roleId" @change.native="clickSelectRow(scope1.row.roleId, scope1.$index)"></el-radio>
           </template>
+        </el-table-column> -->
+         <el-table-column
+          type="selection"
+          width="55">
         </el-table-column>
         <template v-for="item in tableThead">
           <el-table-column style="{display: item.hidden === true ? 'none': ''}" v-if="item.hidden !== true" :key="item.menuId"
@@ -60,21 +66,53 @@
     </el-dialog>
      <!-- dialog 功能列表-->
     <el-dialog title="功能授权" :visible.sync="dialogBtnVisible">
-      <div class="btn-list">
-        <el-button v-for="(item, index) in btnList" :key="index"
-        @click="bindBtn(item.buttonId)" type="primary">{{item.buttonName}}
-        <i class="el-icon-success el-icon--right" :class="item.isCheck === false ? 'checkColor' : ''"></i></el-button>
+      <div class="dialog">
+        <div class="t-left">
+          <el-tree
+            :data="nodeData"
+            node-key="id"
+            ref="leftTree"
+            :draggable='draggable'
+            @node-click = 'nodeClick'
+            :props="defaultProps">
+          </el-tree>
+        </div>
+        <div class="t-right">
+          <div class="btn-list">
+            <el-button v-for="(item, index) in btnList" :key="index"
+            @click="clickBindBtn(item.buttonId)" type="primary">{{item.buttonName}}
+            <i class="el-icon-success el-icon--right" :class="item.isCheck === false ? 'checkColor' : ''"></i></el-button>
+          </div>
+        </div>
+      </div>
+      <!-- <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogBtnVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogBtnVisible = false">确 定</el-button>
+      </div> -->
+    </el-dialog>
+     <!-- dialog 功能列表-->
+    <el-dialog title="菜单授权" :visible.sync="dialogMenuVisible">
+      <div class="dialog">
+        <el-tree
+            :data="nodeData"
+            node-key="id"
+            ref="menuTrue"
+            :draggable='draggable'
+            show-checkbox
+            default-expand-all
+            :props="defaultProps">
+          </el-tree>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogBtnVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogBtnVisible = false">确 定</el-button>
+          <el-button @click="dialogMenuVisible = false">取 消</el-button>
+          <el-button type="primary" @click="clickMenuSure">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRoleList, addRole, delRole, getMenuButtonAuthList, getMenuAuthList } from '@/api/roleSystem'
+import { getRoleList, addRole, delRole, getMenuButtonAuthList, getMenuAuthList, postMenuButtonAuth, cancleMenuButtonAuth, editRole, postMenuAuth } from '@/api/roleSystem'
 export default {
   name: 'sysRoles',
   components: {},
@@ -95,12 +133,25 @@ export default {
       input: null,
       dialogFormVisible: false,
       dialogBtnVisible: false,
+      dialogMenuVisible: false,
       formLabelWidth: '100px',
       nodeClickInfo: '',
       selectRowIndex: '', // 选中的行
-      selectRowId: '', // 选中行的id
+      selectedRowInfo: '', // 选中行信息
       btnList: [], // 功能btn列表
-      isSummit: true // 是否是添加菜单
+      isSummit: true, // 是否是添加菜单
+
+      // 功能授权树列表
+      nodeData: [],
+      // 重置树节点
+      defaultProps: {
+        parent: 'id',
+        value: 'pId',
+        label: 'name',
+        children: 'children'
+      },
+      draggable: true, // 是否开启拖拽菜单
+      temArr: []
     }
   },
   methods: {
@@ -135,9 +186,14 @@ export default {
     },
     // 获取--授权菜单列表
     async getMenuAuthList() {
-      const {data, success, message} = await getMenuAuthList()
+      const {data, success, message} = await getMenuAuthList({roleId: this.selectedRowInfo[0].roleId})
       if (success) {
-        this.tableData = data
+        this.nodeData = data
+        this.findTreeID(this.nodeData)
+        /* eslint-disable */
+        console.log('a111rr', this.temArr)
+        this.$refs.menuTrue.setCheckedKeys(this.temArr)
+        this.temArr = []
       } else {
         this.$message({
           message,
@@ -148,6 +204,30 @@ export default {
         })
       }
     },
+
+    // 获取树节点
+    async findTreeID(arr) {
+      for (const [index, item] of arr.entries()) {
+        if (item.checked && item.children.length === 0) this.temArr.push(item.id)
+        if (item.children.length > 0) {
+          return this.findTreeID(arr[index].children)
+        }
+      }
+    },
+    // 获取-更具点击的菜单获取功能列表
+    async getMenuButtonAuthList(menuId) {
+      const { success, message, data } = await getMenuButtonAuthList({roleId: this.selectedRowInfo[0].selectRowId, menuId})
+      if (!success) {
+         this.$message({
+          message,
+          type: 'error',
+          duration: 1000,
+          showClose: true
+        })
+      } else {
+        this.btnList = data
+      }
+    },
     // 点击--新增
     clickAdd() {
       this.dialogFormVisible = true
@@ -156,60 +236,64 @@ export default {
     },
     // 点击--编辑
     async clickEdit() {
-      if (!this.selectRowId) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行编辑', '提示', {confirmButtonText: '确定'})
       this.dialogFormVisible = true
       this.isSummit = false
-      /* eslint-disable */
-      const {success, data} = await getMenuInfo(this.selectRowId)
+      this.form = this.selectedRowInfo[0]
+    },
+    // 点击--确定编辑
+    async eidtMenu() {
+      const { success } = await editRole(this.selectedRowInfo[0].roleId, this.form)
       if (success) {
-        this.selected = data.parentId
-        this.form = data
+        this.$message.success('编辑成功')
+        this.getRoleList()
+        this.dialogFormVisible = false
       }
     },
     // 点击--删除
     async clickDel() {
-      if (!this.selectRowId) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要删除的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行删除', '提示', {confirmButtonText: '确定'})
       this.$confirm('菜单将会删除, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        /* eslint-disable */
-        const { success, message } = await delRole({id: this.selectRowId})
+        const { roleId } = this.selectedRowInfo[0]
+        const { success, message } = await delRole({id: roleId})
         if (success) {
           const res = await this.$store.dispatch('getMenuAll')
           if (res.success) { 
             this.$message.success('删除菜单成功')
-            this.tableData.splice(this.selectRowIndex, 1)
+            this.tableData.splice(this.tableData.findIndex(item => item.roleId === roleId), 1)
           }
         } else {
-        this.$message({
-          message,
-          type: 'error',
-          duration: 1000,
-          showClose: true
-        })
-      }
+          this.$message({
+            message,
+            type: 'error',
+            duration: 1000,
+            showClose: true
+          })
+        }
       })
     },
     // 点击--功能授权
     async clickButtonAut() {
-      if (!this.selectRowId) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行授权', '提示', {confirmButtonText: '确定'})
       this.dialogBtnVisible = true
-      const { success, message } = await getMenuButtonAuthList({roleId: this.selectRowId})
-      if (!success) {
-         this.$message({
-          message,
-          type: 'error',
-          duration: 1000,
-          showClose: true
-        })
-      }
+      await this.getMenuAuthList()
     },
     // 点击--选中一行
-    clickSelectRow(selectRowId, selectRowIndex) {
-      this.selectRowId = selectRowId
-      this.selectRowIndex = selectRowIndex
+    // clickSelectRow(selectRowId, selectRowIndex) {
+    //   console.log('selectedRowInfo.selectRowId', selectedRowInfo.selectRowId)
+    //   this.selectedRowInfo.selectRowId = selectedRowInfo.selectRowId
+    //   this.selectRowIndex = selectRowIndex
+    // },
+    // 点击--选中
+    handleSelectionChange(val) {
+      this.selectedRowInfo = val
     },
     // 点击--新增提交表达
     async clickSummit() {
@@ -226,6 +310,47 @@ export default {
         })
       }
       this.dialogFormVisible = false
+    },
+    // 点击--功能授权树列表
+    nodeClick(data) {
+      this.getMenuButtonAuthList(data.id)
+    },
+    // 点击--功能授权
+    async clickBindBtn(menuButtonId) {
+      const {roleId} = this.selectedRowInfo[0]
+      for (const item of this.btnList) {
+        if (item.buttonId === menuButtonId) {
+          if (!item.isCheck) {
+            // 选中
+            const {success} = await postMenuButtonAuth({roleId,menuButtonId})
+            if (success) {
+              item.isCheck = true
+              this.$message.success('授权成功')
+            }
+          } else {
+            // 取消选中
+            const {success} = await cancleMenuButtonAuth({roleId,menuButtonId})
+            if (success) {
+              item.isCheck = false
+              this.$message.success('取消授权成功')
+            }
+          }
+        }
+      }
+    },
+    // 点击--菜单授权
+    async clickMenuAut() {
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行授权', '提示', {confirmButtonText: '确定'})
+      this.dialogMenuVisible = true
+      this.getMenuAuthList()
+    },
+    // 点击--菜单授权树点击事件
+    async clickMenuSure() {
+      this.dialogMenuVisible = false
+      const menuIdArr = [...this.$refs.menuTrue.getHalfCheckedKeys(), ...this.$refs.menuTrue.getCheckedKeys()]
+      const { success } = await postMenuAuth({ roleId: this.selectedRowInfo[0].roleId, menuId: menuIdArr})
+      if (success) this.$message.success('授权成功')
     }
   },
   created() {
@@ -236,13 +361,17 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.tree
+.dialog
   display flex
   .t-left
-    min-width 200px
-    margin-right 10px
+    width 200px
+    height 300px
+    border 1px solid #ddd
+    margin-right 20px
   .t-right
-    width 100%
+    width 400px
+    height 300px
+    border 1px solid #ddd
   .tr-btn
     margin-bottom 20px
     display flex
@@ -251,6 +380,9 @@ export default {
 .btn-list
   display flex
   flex-wrap wrap
+  .el-button
+    margin-left 10px
+    margin-top 10px
 .checkColor
   border 1px solid #fff
   color rgba(0, 0,0, 0)

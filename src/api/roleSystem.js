@@ -18,19 +18,11 @@ export function addRole({ roleName, isDisable, isShow, sort, remark }) {
 }
 
 // 超级管理员编辑系统角色
-export function editRole({ roleName, isDisable, isShow, sort, remark, id }) {
-    // id 角色Id
-    const data = {
-      roleName, // string 角色名称
-      isDisable, // boolean 是否禁用
-      isShow, // boolean 是否显示
-      sort, // integer 排序
-      remark // string 备注
-    }
+export function editRole(id, from) {
     return http({
-      url: `${base}Edit${id}`,
+      url: `${base}Edit/${id}`,
       method: 'PUT',
-      data
+      data: from
     })
 }
 
@@ -66,7 +58,7 @@ export function postMenuAuth({ roleId, menuId }) {
 // 授权菜单列表
 export function getMenuAuthList({ roleId }) {
     return http({
-      url: `${base}MenuAuthList${roleId}`,
+      url: `${base}MenuAuthList/${roleId}`,
       method: 'GET'
     })
 }
@@ -99,7 +91,7 @@ export function cancleMenuButtonAuth({ roleId, menuButtonId }) {
 
 // 菜单功能列表
 export function getMenuButtonAuthList({ roleId, menuId }) {
-    const url = `${base}CancelMenuButtonAuth?roleId=${roleId}&menuId=${menuId}`
+    const url = `${base}MenuButtonAuthList?roleId=${roleId}&menuId=${menuId}`
     return http({
       url,
       method: 'GET'

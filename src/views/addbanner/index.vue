@@ -350,7 +350,6 @@ export default {
   .t-right
     width 100%
   .tr-btn
-    margin-bottom 20px
     display flex
   .table .el-radio+.el-radio
     margin-left 0 !important
