@@ -33,13 +33,11 @@ export const constantRouterMap = [
     path: '',
     component: Layout,
     children: [{
-      path: 'addbanner',
-      name: 'addbanner',
-      component: _import('addbanner/index'),
+      path: 'bannerManage',
+      name: 'bannerManage',
+      component: _import('bannerManage/index'),
       meta: {
-        title: 'addbanner',
-        icon: 'dashboard',
-        noCache: true
+        title: 'bannerManage'
       }
     }]
   },
@@ -66,6 +64,18 @@ export const constantRouterMap = [
       component: _import('compRoles/index'),
       meta: {
         title: 'compRoles'
+      }
+    }]
+  },
+  {
+    path: '',
+    component: Layout,
+    children: [{
+      path: 'functionManage',
+      name: 'functionManage',
+      component: _import('functionManage/index'),
+      meta: {
+        title: 'functionManage'
       }
     }]
   }

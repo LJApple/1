@@ -7,9 +7,12 @@ export default {
   route: {
     systemManager: '系统管理',
     dashboard: '首页',
-    addbanner: '添加菜单',
+    bannerManage: '菜单管理',
     sysRoles: '系统角色',
-    compRoles: '公司角色'
+    compRoles: '公司角色',
+    functionManage: '功能管理',
+    companyManage: '公司管理',
+    serverManage: '服务器管理'
   },
   app: {
     switchlang: '切换语言成功',

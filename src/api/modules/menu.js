@@ -1,9 +1,10 @@
 import http from '@/utils/http'
+const base = '/Menu/'
 
 // 获取菜单
 export function getMenuAll() {
   return http({
-    url: '/Menu/LeftTree',
+    url: `${base}LeftTree`,
     method: 'get'
   })
 }
@@ -11,7 +12,7 @@ export function getMenuAll() {
 // 获取菜单树
 export function getMenuTree() {
   return http({
-    url: '/Menu/Tree',
+    url: `${base}Tree`,
     method: 'get'
   })
 }
@@ -19,7 +20,7 @@ export function getMenuTree() {
 // 添加菜单
 export function addMenu(param) {
   return http({
-    url: '/Menu/Add',
+    url: `${base}Add`,
     method: 'post',
     data: param
   })
@@ -28,7 +29,7 @@ export function addMenu(param) {
 // 删除菜单
 export function delMenu(id) {
   return http({
-    url: `/Menu/Del/${id}`,
+    url: `${base}${id}`,
     method: 'DELETE'
   })
 }
@@ -36,7 +37,7 @@ export function delMenu(id) {
 // 修改菜单
 export function editMenu(menuId, param) {
   return http({
-    url: `/Menu/Edit/${menuId}`,
+    url: `${base}/Edit/${menuId}`,
     method: 'put',
     data: param
   })
@@ -45,13 +46,13 @@ export function editMenu(menuId, param) {
 // 菜单信息
 export function getMenuInfo(id) {
   return http({
-    url: `/Menu/Info/${id}`,
+    url: `${base}/Info/${id}`,
     method: 'get'
   })
 }
 // 根据上级菜单Id获取下级菜单列表
 export function getListByPid(pId) {
-  const url = pId ? `/Menu/ListByPid?pId=${pId}`: `/Menu/ListByPid`
+  const url = pId ? `${base}ListByPid?pId=${pId}`: `/Menu/ListByPid`
   return http({
     url,
     method: 'get'
@@ -61,7 +62,7 @@ export function getListByPid(pId) {
 // 获取button功能列表
 export function getMenuButtonList(menuId) {
   return http({
-    url: `/Menu/ButtonList/${menuId}`,
+    url: `${base}ButtonList/${menuId}`,
     method: 'get'
   })
 }
@@ -69,7 +70,7 @@ export function getMenuButtonList(menuId) {
 // 绑定button功能
 export function postButtonList(data) {
   return http({
-    url: `/Menu/BindButton`,
+    url: `${base}BindButton`,
     method: 'post',
     data
   })
@@ -78,7 +79,7 @@ export function postButtonList(data) {
 // 取消绑定button功能
 export function delButtonList(data) {
   return http({
-    url: `/Menu/CancelBindButton`,
+    url: `${base}CancelBindButton`,
     method: 'DELETE',
     data
   })
