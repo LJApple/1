@@ -78,6 +78,30 @@ export const constantRouterMap = [
         title: 'functionManage'
       }
     }]
+  },
+  {
+    path: '',
+    component: Layout,
+    children: [{
+      path: 'serverManage',
+      name: 'serverManage',
+      component: _import('serverManage/index'),
+      meta: {
+        title: 'serverManage'
+      }
+    }]
+  },
+  {
+    path: '',
+    component: Layout,
+    children: [{
+      path: 'companyManage',
+      name: 'companyManage',
+      component: _import('companyManage/index'),
+      meta: {
+        title: 'companyManage'
+      }
+    }]
   }
 ]
 

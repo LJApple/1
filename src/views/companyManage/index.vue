@@ -48,6 +48,17 @@
             <el-radio v-for="(itemRodio, index) in item.radioInfo" :key="index" v-model="form[item.prop]" 
             :label="itemRodio.radioLabel">{{itemRodio.radioText}}</el-radio>
           </el-form-item>
+          <el-form-item :key="index" v-else-if="item.tagType === 'select'" :label="item.label" 
+          :label-width="formLabelWidth">
+            <el-select v-model="value" style="width: 300px" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
         </template>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -69,20 +80,29 @@ export default {
       tableData: [],
       radio: '',
       tableThead: [
-        {label: 'buttonId', prop: 'buttonId', hidden: true},
-        {label: '名称', prop: 'buttonName', tagType: 'input', type:"text"},
-        {label: '编号', prop: 'buttonCode', tagType: 'input', type:"text"},
-        {label: '执行函数', prop: 'script', tagType: 'input', type:"text"},
-        {label: '图标', prop: 'icon', tagType: 'input', type:"text"},
-        {label: '排序', prop: 'sort', tagType: 'input', type:"number"},        
-        {label: '是否禁用', prop: 'isDisable', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]},
-        {label: '是否显示', prop: 'isShow', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]}   
+        {label: 'companyId', prop: 'companyId', hidden: true},
+        {label: '公司名称', prop: 'companyName', tagType: 'input', type:"text"},
+        {label: '公司代码', prop: 'companyCode', tagType: 'input', type:"text"},
+        {label: '公司类型', prop: 'companyType', tagType: 'input', type:"text"},
+        {label: '账号', prop: 'account', tagType: 'input', type:"text"},
+        {label: 'db部署服务器', prop: 'dbServerName', tagType: 'select', type:"number"},  
+        {label: '数据库名称', prop: 'dbName', tagType: 'input', type:"text"},
+        {label: '使用期', prop: 'expireDate', tagType: 'input', type:"text"},        
+        {label: '是否禁用', prop: 'isDisable', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]}
       ],
       form: {},
       dialogFormVisible: false,
       formLabelWidth: '100px',
       selectedRowInfo: '', // 选中行信息
-      isSummit: true // 是否是添加菜单
+      isSummit: true, // 是否是添加菜单
+      options: [{
+        value: '1',
+        label: '一号服务器'
+      }, {
+        value: '2',
+        label: '二号服务器'
+      }],
+      value: '1'
     }
   },
   methods: {
@@ -101,8 +121,8 @@ export default {
       this.form = {...this.form, ...obj}
     },
     // 获取--获取角色列表
-    async getBtnList() {
-      const {data, success, message} = await Api.getFunButtonList()
+    async getList() {
+      const {data, success, message} = await Api.getComMaList()
       if (success) {
         this.tableData = data
       } else {
@@ -148,7 +168,7 @@ export default {
         type: 'warning'
       }).then(async () => {
         const { buttonId } = this.selectedRowInfo[0]
-        const { success, message } = await Api.delFunButton({buttonId})
+        const { success, message } = await  Api.delSerButton({buttonId})
         if (success) {
           if (res.success) { 
             this.$message.success('删除成功')
@@ -170,10 +190,10 @@ export default {
     },
     // 点击--新增提交表达
     async clickSummit() {
-      const { success, message } = await Api.AddSerButton(this.form)
+      const { success, message } = await  Api.AddFunButton(this.form)
       if (success) {
         this.$message.success('添加成功')
-        this.getBtnList()
+        this.getList()
       } else {
         this.$message({
           message,
@@ -187,7 +207,7 @@ export default {
   },
   created() {
     this.resetFields()
-    this.getBtnList()
+    this.getList()
   }
 }
 </script>
