@@ -20,7 +20,7 @@
           width="55">
         </el-table-column>
         <template v-for="item in tableThead">
-          <el-table-column style="{display: item.hidden === true ? 'none': ''}" v-if="item.hidden !== true" :key="item.menuId"
+          <el-table-column style="{display: item.hidden === true ? 'none': ''}" v-if="item.hidden !== true" :key="item.buttonId"
           :label="item.label"
           :prop="item.prop"
           min-width="150"
@@ -101,7 +101,7 @@ export default {
       this.form = {...this.form, ...obj}
     },
     // 获取--获取角色列表
-    async getBtnList() {
+    async getList() {
       const {data, success, message} = await Api.getFunButtonList()
       if (success) {
         this.tableData = data
@@ -131,10 +131,10 @@ export default {
     },
     // 点击--确定编辑
     async eidt() {
-      const { success } = await  Api.editSerButton(this.selectedRowInfo[0].buttonId, this.form)
+      const { success } = await  Api.editFunButton(this.selectedRowInfo[0].buttonId, this.form)
       if (success) {
         this.$message.success('编辑成功')
-        this.getRoleList()
+        this.getList()
         this.dialogFormVisible = false
       }
     },
@@ -148,12 +148,10 @@ export default {
         type: 'warning'
       }).then(async () => {
         const { buttonId } = this.selectedRowInfo[0]
-        const { success, message } = await Api.delFunButton({buttonId})
+        const { success, message } = await Api.delFunButton(buttonId)
         if (success) {
-          if (res.success) { 
-            this.$message.success('删除成功')
-            this.tableData.splice(this.tableData.findIndex(item => item.buttonId === buttonId), 1)
-          }
+          this.$message.success('删除成功')
+          this.tableData.splice(this.tableData.findIndex(item => item.buttonId === buttonId), 1)
         } else {
           this.$message({
             message,
@@ -187,7 +185,7 @@ export default {
   },
   created() {
     this.resetFields()
-    this.getBtnList()
+    this.getList()
   }
 }
 </script>

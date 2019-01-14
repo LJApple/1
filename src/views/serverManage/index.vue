@@ -150,10 +150,8 @@ export default {
         const { buttonId } = this.selectedRowInfo[0]
         const { success, message } = await  Api.delSerButton({buttonId})
         if (success) {
-          if (res.success) { 
-            this.$message.success('删除成功')
-            this.tableData.splice(this.tableData.findIndex(item => item.buttonId === buttonId), 1)
-          }
+          this.$message.success('删除成功')
+          this.tableData.splice(this.tableData.findIndex(item => item.buttonId === buttonId), 1)
         } else {
           this.$message({
             message,
