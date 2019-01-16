@@ -18,7 +18,13 @@ export function editSerButton(id, from) {
       data: from
     })
 }
-
+// 获取详细信息
+export function getSerInfo(id) {
+  return http({
+    url: `${base}Info/${id}`,
+    method: 'get'
+  })
+}
 // 删除功能
 export function delSerButton(id) {
     return http({

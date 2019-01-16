@@ -4,7 +4,7 @@ const base = '/Button/'
 // 添加功能
 export function AddFunButton(form) {
   return http({
-    url: `${base}AddButton`,
+    url: `${base}Add`,
     method: 'POST',
     data: form
   })
@@ -13,7 +13,7 @@ export function AddFunButton(form) {
 // 修改功能
 export function editFunButton(id, from) {
     return http({
-      url: `${base}EditButton/${id}`,
+      url: `${base}Edit/${id}`,
       method: 'PUT',
       data: from
     })
@@ -30,7 +30,7 @@ export function delFunButton(id) {
 // 获取功能列表
 export function getFunButtonList() {
   return http({
-    url: `${base}GetButtonList`,
+    url: `${base}GetList`,
     method: 'get'
   })
 }

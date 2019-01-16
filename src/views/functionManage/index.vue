@@ -76,7 +76,7 @@ export default {
         {label: '图标', prop: 'icon', tagType: 'input', type:"text"},
         {label: '排序', prop: 'sort', tagType: 'input', type:"number"},        
         {label: '是否禁用', prop: 'isDisable', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]},
-        {label: '是否显示', prop: 'isShow', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]}   
+        {label: '备注', prop: 'remark', tagType: 'input', type:"text"}   
       ],
       form: {},
       dialogFormVisible: false,
@@ -168,10 +168,11 @@ export default {
     },
     // 点击--新增提交表达
     async clickSummit() {
+      this.form.sort = Number(this.form.sort)
       const { success, message } = await Api.AddSerButton(this.form)
       if (success) {
         this.$message.success('添加成功')
-        this.getBtnList()
+        this.getList()
       } else {
         this.$message({
           message,

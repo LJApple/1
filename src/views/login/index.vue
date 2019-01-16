@@ -28,10 +28,10 @@
           </div>
 
           <div class="login-footer">
-            <el-col :span="12">
+            <!-- <el-col :span="12">
               <el-checkbox v-model="remember" name="type">{{$t('login.remember')}}</el-checkbox>
-            </el-col>
-            <el-col class="forgetpwd" :span="12">
+            </el-col> -->
+            <el-col class="forgetpwd" :span="24">
               <span @click="wrapSwitch(false)">{{$t('login.forgetpwd')}}</span>
             </el-col>
           </div>

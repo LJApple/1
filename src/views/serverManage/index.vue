@@ -20,7 +20,7 @@
           width="55">
         </el-table-column>
         <template v-for="item in tableThead">
-          <el-table-column style="{display: item.hidden === true ? 'none': ''}" v-if="item.hidden !== true" :key="item.menuId"
+          <el-table-column style="{display: item.hidden === true ? 'none': ''}" v-if="item.hidden !== true" :key="item.dbServiceId"
           :label="item.label"
           :prop="item.prop"
           min-width="150"
@@ -69,14 +69,13 @@ export default {
       tableData: [],
       radio: '',
       tableThead: [
-        // {label: 'buttonId', prop: 'buttonId', hidden: true},
+        {label: 'dbServiceId', prop: 'dbServiceId', hidden: true},
         {label: '服务器名称', prop: 'dbServiceName', tagType: 'input', type:"text"},
         {label: 'IP', prop: 'domain', tagType: 'input', type:"text"},
         {label: '账号', prop: 'account', tagType: 'input', type:"text"},
-        {label: '密码', prop: 'account', tagType: 'input', type:"text", hidden: true},
+        {label: '密码', prop: 'password', tagType: 'input', type:"text", hidden: true},
         {label: '排序', prop: 'sort', tagType: 'input', type:"number"},        
         {label: '是否禁用', prop: 'isDisable', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]},
-        {label: '是否显示', prop: 'isShowMenu', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]}   
       ],
       form: {},
       dialogFormVisible: false,
@@ -127,15 +126,16 @@ export default {
       if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行编辑', '提示', {confirmButtonText: '确定'})
       this.dialogFormVisible = true
       this.isSummit = false
+      await Api.getSerInfo(this.selectedRowInfo[0].dbServiceId)
       this.form = this.selectedRowInfo[0]
     },
     // 点击--确定编辑
     async eidt() {
-      const { success } = await  Api.editSerButton(this.selectedRowInfo[0].buttonId, this.form)
+      const { success } = await  Api.editSerButton(this.selectedRowInfo[0].dbServiceId, this.form)
       if (success) {
-        this.$message.success('编辑成功')
-        this.getRoleList()
         this.dialogFormVisible = false
+        this.$message.success('编辑成功')
+        this.getList()
       }
     },
     // 点击--删除
@@ -147,11 +147,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        const { buttonId } = this.selectedRowInfo[0]
-        const { success, message } = await  Api.delSerButton({buttonId})
+        const { dbServiceId } = this.selectedRowInfo[0]
+        const { success, message } = await  Api.delSerButton(dbServiceId)
         if (success) {
           this.$message.success('删除成功')
-          this.tableData.splice(this.tableData.findIndex(item => item.buttonId === buttonId), 1)
+          this.tableData.splice(this.tableData.findIndex(item => item.dbServiceId === dbServiceId), 1)
         } else {
           this.$message({
             message,
@@ -168,7 +168,7 @@ export default {
     },
     // 点击--新增提交表达
     async clickSummit() {
-      const { success, message } = await  Api.AddFunButton(this.form)
+      const { success, message } = await Api.AddSerButton(this.form)
       if (success) {
         this.$message.success('添加成功')
         this.getList()

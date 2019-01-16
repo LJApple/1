@@ -5,18 +5,19 @@
         {{account}}<i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="profile">{{$t('sidebarDropDown.profile')}}</el-dropdown-item>
-        <el-dropdown-item command="lock">{{$t('sidebarDropDown.lock')}}</el-dropdown-item>
+        <!-- <el-dropdown-item command="profile">{{$t('sidebarDropDown.profile')}}</el-dropdown-item>
+        <el-dropdown-item command="lock">{{$t('sidebarDropDown.lock')}}</el-dropdown-item> -->
         <el-dropdown-item command="logout">{{$t('sidebarDropDown.logout')}}</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-    <div @click="jumpToProfile" class="info-area__avatar">
+    <!-- <div @click="jumpToProfile" class="info-area__avatar">
       <img :src="avatarUrl" />
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
+import { removeToken } from '@/utils/auth'
 export default {
   name: 'demo',
   data() {
@@ -26,18 +27,20 @@ export default {
     }
   },
   methods: {
-    dropdownComm(command) {
-      switch (command) {
-        case 'logout':
-          this.logouthandle()
-          break
-        case 'lock':
-          this.lockhandle()
-          break
-        case 'profile':
-          this.jumpToProfile()
-          break
-      }
+    dropdownComm() {
+      removeToken()
+     this.$router.push({path: '/'})
+      // switch (command) {
+      //   case 'logout':
+      //     this.logouthandle()
+      //     break
+      //   case 'lock':
+      //     this.lockhandle()
+      //     break
+      //   case 'profile':
+      //     this.jumpToProfile()
+      //     break
+      // }
     },
     async logouthandle() {
       await this.$store.dispatch('logout')
