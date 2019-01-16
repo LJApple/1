@@ -37,7 +37,7 @@
     <!-- dialog -->
     <el-dialog title="新增角色" 
     :visible.sync="dialogFormVisible" width="500px">
-      <el-form ref="form" :model="form">
+      <!-- <el-form ref="form" :model="form">
         <template v-for="(item, index) in tableThead">
           <el-form-item :key="index" v-if="item.tagType === 'input'" :label="item.label" 
           :label-width="formLabelWidth">
@@ -49,7 +49,8 @@
             :label="itemRodio.radioLabel">{{itemRodio.radioText}}</el-radio>
           </el-form-item>
         </template>
-      </el-form>
+      </el-form> -->
+      <form-model :form="form" :tableThead="tableThead"></form-model>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" v-if="isSummit === true" @click="clickSummit()">确 定</el-button>
@@ -61,9 +62,12 @@
 
 <script>
 import Api from '@/api/index'
+import formModel from '@/components/formmodel'
 export default {
   name: 'functionManage',
-  components: {},
+  components: {
+    formModel
+  },
   data() {
     return {
       tableData: [],
@@ -80,7 +84,6 @@ export default {
       ],
       form: {},
       dialogFormVisible: false,
-      formLabelWidth: '100px',
       selectedRowInfo: '', // 选中行信息
       isSummit: true // 是否是添加菜单
     }

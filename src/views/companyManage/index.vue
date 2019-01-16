@@ -50,9 +50,11 @@
           </el-form-item>
           <el-form-item :key="index" v-else-if="item.tagType === 'select'" :label="item.label" 
           :label-width="formLabelWidth">
-            <el-select v-model="value" style="width: 300px" placeholder="请选择">
+          <view>{{form[item.prop]}}</view>
+            <el-select v-model="form[item.prop]" 
+            style="width: 300px" placeholder="请选择">
               <el-option
-                v-for="item in options"
+                v-for="item in item.option"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -83,9 +85,9 @@ export default {
         {label: 'companyId', prop: 'companyId', hidden: true},
         {label: '公司名称', prop: 'companyName', tagType: 'input', type:"text"},
         {label: '公司代码', prop: 'companyCode', tagType: 'input', type:"text"},
-        {label: '公司类型', prop: 'companyType', tagType: 'input', type:"text"},
+        {label: '公司类型', prop: 'companyType', tagType: 'select', option: []},
         {label: '账号', prop: 'account', tagType: 'input', type:"text"},
-        {label: 'db部署服务器', prop: 'dbServerName', tagType: 'select', type:"number"},  
+        {label: 'db部署服务器', prop: 'dbServerName', tagType: 'select', option: []},  
         {label: '数据库名称', prop: 'dbName', tagType: 'input', type:"text"},
         {label: '使用期', prop: 'expireDate', tagType: 'input', type:"text"},        
         {label: '是否禁用', prop: 'isDisable', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]}
@@ -95,14 +97,6 @@ export default {
       formLabelWidth: '100px',
       selectedRowInfo: '', // 选中行信息
       isSummit: true, // 是否是添加菜单
-      options: [{
-        value: '1',
-        label: '一号服务器'
-      }, {
-        value: '2',
-        label: '二号服务器'
-      }],
-      value: '1'
     }
   },
   methods: {
@@ -120,6 +114,45 @@ export default {
       }
       this.form = {...this.form, ...obj}
     },
+    // 获取--获取基本数据
+    async getBaseSelect() {
+      // 公司类型
+      const resCom =  await Api.getComRoleList()
+      // 服务器类型
+      const resSer = await Api.getSerList()
+      const comOptions = []
+      const serOptions = []
+      if (resCom.data) {
+        for (const item of resCom.data) {
+          const option = {
+            value: item.roleName,
+            label: item.roleName
+          }
+          comOptions.push(option)
+        }
+      }
+       if (resSer.data) {
+        for (const item of resSer.data) {
+          const option = {
+            value: item.dbServiceName,
+            label: item.dbServiceName
+          }
+          serOptions.push(option)
+        }
+      }
+      for (const item of this.tableThead) {
+        // 服务器数据初始化
+        if (item.tagType === 'select' && item.prop === 'companyType') {
+          item.option = comOptions
+        }
+        if (item.tagType === 'select' && item.prop === 'dbServerName') {
+          item.option = serOptions
+        }
+      }
+      if (!this.form.dbServerName) this.form.dbServerName = serOptions[0].value
+      if (!this.form.companyType) this.form.companyType = comOptions[0].value
+    },
+    // 
     // 获取--获取角色列表
     async getList() {
       const {data, success, message} = await Api.getComMaList()
@@ -140,6 +173,7 @@ export default {
       this.dialogFormVisible = true
       this.isSummit = true
       this.resetFields()
+      this.getBaseSelect()
     },
     // 点击--编辑
     async clickEdit() {
@@ -151,7 +185,7 @@ export default {
     },
     // 点击--确定编辑
     async eidt() {
-      const { success } = await  Api.editSerButton(this.selectedRowInfo[0].buttonId, this.form)
+      const { success } = await  Api.editComMa(this.selectedRowInfo[0].companyId, this.form)
       if (success) {
         this.$message.success('编辑成功')
         this.getRoleList()
@@ -167,13 +201,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        const { buttonId } = this.selectedRowInfo[0]
-        const { success, message } = await  Api.delSerButton({buttonId})
+        const { companyId } = this.selectedRowInfo[0]
+        const { success, message } = await  Api.delComMa(companyId)
         if (success) {
-          if (res.success) { 
             this.$message.success('删除成功')
-            this.tableData.splice(this.tableData.findIndex(item => item.buttonId === buttonId), 1)
-          }
+            this.tableData.splice(this.tableData.findIndex(item => item.companyId === companyId), 1)
         } else {
           this.$message({
             message,
@@ -190,7 +222,7 @@ export default {
     },
     // 点击--新增提交表达
     async clickSummit() {
-      const { success, message } = await  Api.AddFunButton(this.form)
+      const { success, message } = await Api.AddComMa(this.form)
       if (success) {
         this.$message.success('添加成功')
         this.getList()
