@@ -1,6 +1,6 @@
 <template>
-    <el-form ref="form" :model="form">
-      <template v-for="(item, index) in tableThead">
+     <el-form ref="form" :model="form">
+        <template v-for="(item, index) in tableThead">
           <el-form-item :key="index" v-if="item.tagType === 'input'" :label="item.label" 
           :label-width="formLabelWidth">
             <el-input class="lv-input300" v-model="form[item.prop]" :type="item.type"></el-input>
@@ -12,9 +12,11 @@
           </el-form-item>
           <el-form-item :key="index" v-else-if="item.tagType === 'select'" :label="item.label" 
           :label-width="formLabelWidth">
-            <el-select v-model="value" style="width: 300px" placeholder="请选择">
+          <view>{{form[item.prop]}}</view>
+            <el-select v-model="form[item.prop]" 
+            style="width: 300px" placeholder="请选择">
               <el-option
-                v-for="item in options"
+                v-for="item in item.option"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -22,7 +24,7 @@
             </el-select>
           </el-form-item>
         </template>
-    </el-form>
+      </el-form>
 </template>
 
 <script>

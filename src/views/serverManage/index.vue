@@ -1,55 +1,19 @@
 <template>
   <div class="tree">
     <div class="t-right">
-      <div class="tr-btn">
-        <el-button type="primary" @click="clickAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
-        <el-button type="primary" @click="clickEdit"><i class="el-icon-edit el-icon--left"></i>编辑</el-button>
-        <el-button type="primary" @click="clickDel"><i class="el-icon-delete el-icon--left"></i>删除</el-button>
-      </div>
-      <el-table
-        class="table"
-        ref="multipleTable"
-        :data="tableData"
-        tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-        highlight-current-row
-      >
-         <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <template v-for="item in tableThead">
-          <el-table-column style="{display: item.hidden === true ? 'none': ''}" v-if="item.hidden !== true" :key="item.dbServiceId"
-          :label="item.label"
-          :prop="item.prop"
-          min-width="150"
-          >
-           <template slot-scope="scope">
-            <div v-if="scope.row[item.prop] === true">是</div>
-            <div v-else-if="scope.row[item.prop] === false">否</div>
-            <div v-else>{{scope.row[item.prop]}}</div>
-          </template>
-        </el-table-column>
-        </template>
-      </el-table>
+        <table-model 
+        @handleSelectionChange="handleSelectionChange" 
+        @clickAdd="clickAdd"
+        @clickEdit="clickEdit"
+        @clickDel="clickDel"
+        :butttonList="butttonList"
+        :tableData="tableData" 
+        :tableThead="tableThead"></table-model>
     </div>
     <!-- dialog -->
-    <el-dialog title="新增角色" 
+    <el-dialog title="新增" 
     :visible.sync="dialogFormVisible" width="500px">
-      <el-form ref="form" :model="form">
-        <template v-for="(item, index) in tableThead">
-          <el-form-item :key="index" v-if="item.tagType === 'input'" :label="item.label" 
-          :label-width="formLabelWidth">
-            <el-input class="lv-input300" v-model="form[item.prop]" :type="item.type"></el-input>
-          </el-form-item>
-          <el-form-item :key="index" v-else-if="item.tagType === 'radio'" :label="item.label" 
-          :label-width="formLabelWidth">
-            <el-radio v-for="(itemRodio, index) in item.radioInfo" :key="index" v-model="form[item.prop]" 
-            :label="itemRodio.radioLabel">{{itemRodio.radioText}}</el-radio>
-          </el-form-item>
-        </template>
-      </el-form>
+      <form-model :form="form" :tableThead="tableThead"></form-model>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" v-if="isSummit === true" @click="clickSummit()">确 定</el-button>
@@ -61,13 +25,18 @@
 
 <script>
 import Api from '@/api/index'
+import formModel from '@/components/formmodel'
+import tableModel from '@/components/tablemodel'
 export default {
   name: 'functionManage',
-  components: {},
+  components: {
+    formModel,
+    tableModel
+  },
   data() {
     return {
       tableData: [],
-      radio: '',
+      butttonList: ['clickAdd', 'clickEdit', 'clickDel'],
       tableThead: [
         {label: 'dbServiceId', prop: 'dbServiceId', hidden: true},
         {label: '服务器名称', prop: 'dbServiceName', tagType: 'input', type:"text"},

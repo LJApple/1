@@ -123,7 +123,7 @@
 import Api from '@/api/index'
 import SelectTree from '@/components/selectTree'
 export default {
-  name: 'dashboard',
+  name: 'bannerManage',
   components: {
     SelectTree
   },
