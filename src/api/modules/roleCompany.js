@@ -97,3 +97,74 @@ export function getComMenuButtonAuthList({ roleId, menuId }) {
       method: 'GET'
     })
 }
+
+// 数据授权
+export function postComDataAuth({ roleId, tableCode, purviewState }) {
+  const data = {
+    roleId,
+    tableCode,
+    purviewState
+  }
+  return http({
+    url: `${base}DataAuth`,
+    method: 'POST',
+    data
+  })
+}
+
+// 取消数据授权
+export function delComDataAuth({ roleId, tableCode, purviewState }) {
+  const data = {
+    roleId, 
+    tableCode,
+    purviewState
+  }
+  return http({
+    url: `${base}CancelDataAuth`,
+    method: 'DELETE',
+    data
+  })
+}
+
+// 数据授权列表
+export function getComDataAuthList(roleId) {
+  return http({
+    url: `${base}DataAuthList?roleId=${roleId}`,
+    method: 'GET'
+  })
+}
+
+// 字段授权
+export function postComFieldAuth({ roleId, tableCode, purviewState }) {
+  const data = {
+    roleId,
+    tableCode,
+    purviewState
+  }
+  return http({
+    url: `${base}FieldAuth`,
+    method: 'POST',
+    data
+  })
+}
+// 取消字段授权
+export function delComFieldAuth({ roleId, tableCode, columnCode }) {
+  const data = {
+    roleId,
+    tableCode,
+    columnCode
+  }
+  return http({
+    url: `${base}CancelFieldAuth`,
+    method: 'DELETE',
+    data
+  })
+}
+
+// 字段授权列表
+export function getComFieldAuthList(roleId) {
+  return http({
+    url: `${base}FieldAuthList/${roleId}`,
+    method: 'GET'
+  })
+}

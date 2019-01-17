@@ -360,12 +360,24 @@ export default {
       if (success) this.$message.success('授权成功')
     },
     // 点击--数据授权
-    clickDataAut() {
+    async clickDataAut() {
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行授权', '提示', {confirmButtonText: '确定'})
       this.dialogDataVisible = true
+      const { success, data } = await Api.getComDataAuthList(this.selectedRowInfo[0].roleId)
+      if (success) {
+        console.log('data', data)
+      }
     },
     // 点击--字段授权
-    clickFieldAut() {
+    async clickFieldAut() {
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行授权', '提示', {confirmButtonText: '确定'})
       this.dialogFieldVisible = true
+      const { success, data } = await Api.getComFieldAuthList(this.selectedRowInfo[0].roleId)
+      if (success) {
+        console.log('data', data)
+      }
     }
   },
   created() {
