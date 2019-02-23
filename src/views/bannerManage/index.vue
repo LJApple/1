@@ -44,18 +44,24 @@
           min-width="150"
           >
           <template slot-scope="scope">
-            <!-- <el-radio class="radio" v-model="scope.row." label="选中" @change.native="getCurrentRow(scope.$index)" >&nbsp;</el-radio> -->
-            <el-switch
+            <!-- <el-switch
               v-if="scope.row[item.prop] === true || 
               scope.row[item.prop] === false"
               v-model="scope.row[item.prop]"
               active-text="是"
               inactive-text="否">
-            </el-switch>
+            </el-switch> -->
+            <div  v-if="scope.row[item.prop] === true || 
+              scope.row[item.prop] === false">
+                <span v-if="scope.row[item.prop] === true">是</span>
+                <span v-else>否</span>
+            </div>
             <div v-else-if="scope.row[item.prop] === 0 ||
               scope.row[item.prop] === 1">
-              <el-radio v-model="scope.row[item.prop]" :label="0">当前页面嵌套</el-radio>
-              <el-radio v-model="scope.row[item.prop]" :label="1">打开新页面</el-radio>
+              <!-- <el-radio v-model="scope.row[item.prop]" :label="0">当前页面嵌套</el-radio>
+              <el-radio v-model="scope.row[item.prop]" :label="1">打开新页面</el-radio> -->
+              <span v-if="scope.row[item.prop] === 0">当前页面嵌套</span>
+              <span v-else>当前页面嵌套</span>
             </div>
             <span v-else>{{scope.row[item.prop]}}</span>
           </template>

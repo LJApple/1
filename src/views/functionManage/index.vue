@@ -51,7 +51,8 @@ export default {
       dialogFormVisible: false,
       selectedRowInfo: '', // 选中行信息
       isSummit: true, // 是否是添加菜单
-      dialogTitle: '新增'
+      dialogTitle: '新增',
+      dialogBtnVisible: false,
     }
   },
   methods: {
@@ -140,7 +141,7 @@ export default {
     // 点击--新增提交表达
     async clickSummit() {
       this.form.sort = Number(this.form.sort)
-      const { success, message } = await Api.AddSerButton(this.form)
+      const { success, message } = await Api.AddFunButton(this.form)
       if (success) {
         this.$message.success('添加成功')
         this.getList()

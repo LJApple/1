@@ -22,7 +22,7 @@ export function editFunButton(id, from) {
 // 删除功能
 export function delFunButton(id) {
     return http({
-      url: `${base}DelButton/${id}`,
+      url: `${base}Del/${id}`,
       method: 'DELETE'
     })
 }
@@ -30,7 +30,7 @@ export function delFunButton(id) {
 // 获取功能列表
 export function getFunButtonList() {
   return http({
-    url: `${base}GetList`,
+    url: `${base}List`,
     method: 'get'
   })
 }

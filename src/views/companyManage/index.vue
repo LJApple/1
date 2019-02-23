@@ -6,6 +6,8 @@
         @clickAdd="clickAdd"
         @clickEdit="clickEdit"
         @clickDel="clickDel"
+        @clickBusinessAut="clickBusinessAut"
+        @clickRoleAut="clickRoleAut"
         :butttonList="butttonList"
         :tableData="tableData" 
         :tableThead="tableThead"></table-model>
@@ -18,6 +20,22 @@
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" v-if="isSummit === true" @click="clickSummit()">确 定</el-button>
         <el-button type="primary" v-else @click="eidt()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- dialog 功能列表-->
+    <el-dialog title="业务授权" :visible.sync="dialogBtnVisible">
+      <div class="btn-list">
+        <el-button v-for="(item, index) in btnList" :key="index"
+        @click="bindBtn(item.system)" type="primary">{{item.system}}
+        <i class="el-icon-success el-icon--right" :class="item.isCheck === false ? 'checkColor' : ''"></i></el-button>
+      </div>
+    </el-dialog>
+     <!-- dialog 功能列表2-->
+    <el-dialog title="角色授权" :visible.sync="dialogBtn2Visible">
+      <div class="btn-list">
+        <el-button v-for="(item, index) in btnList2" :key="index"
+        @click="bindBtn2(item.roleId)" type="primary">{{item.roleName}}
+        <i class="el-icon-success el-icon--right" :class="item.isCheck === false ? 'checkColor' : ''"></i></el-button>
       </div>
     </el-dialog>
   </div>
@@ -36,7 +54,7 @@ export default {
   data() {
     return {
       tableData: [],
-      butttonList: ['clickAdd', 'clickEdit', 'clickDel'],
+      butttonList: ['clickAdd', 'clickEdit', 'clickDel', 'clickBusinessAut',  'clickRoleAut'],
       tableThead: [
         {label: 'companyId', prop: 'companyId', hidden: true},
         {label: '公司名称', prop: 'companyName', tagType: 'input', type:"text"},
@@ -53,7 +71,11 @@ export default {
       formLabelWidth: '100px',
       selectedRowInfo: '', // 选中行信息
       isSummit: true, // 是否是添加菜单
-      dialogTitle: '新增'
+      dialogTitle: '新增',
+      dialogBtnVisible: false,
+      btnList: [],
+      btnList2: [],
+      dialogBtn2Visible: false
     }
   },
   methods: {
@@ -191,6 +213,57 @@ export default {
         })
       }
       this.dialogFormVisible = false
+    },
+    // 点击-获取业务授权列表
+    async clickBusinessAut() {
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要删除的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行删除', '提示', {confirmButtonText: '确定'})
+      this.dialogBtnVisible = true
+      const { data, success } = await Api.getComSystemAuthList(this.selectedRowInfo[0].companyId)
+      if (success) this.btnList = data
+    },
+    // 点击-选择授权功能列表
+    async bindBtn(system) {
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行授权', '提示', {confirmButtonText: '确定'})
+      for (const item of this.btnList) {
+        if (item.system === system) {
+          if (!item.isCheck) {
+            // 选中
+            const {success} = await Api.postComSystemAuth(this.selectedRowInfo[0].companyId,system)
+            if (success) item.isCheck = true
+          } else {
+            // 取消选中
+            // const {success} = await Api.delButtonList({menuId,buttonId})
+            // if (success) item.isCheck = false
+          }
+        }
+      }
+    },
+
+    // 点击-获取角色授权列表
+    async clickRoleAut() {
+      if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行授权', '提示', {confirmButtonText: '确定'})
+      this.dialogBtn2Visible = true
+      const { data, success } = await Api.getComRoleAuthList(this.selectedRowInfo[0].companyId)
+      if (success) this.btnList2 = data
+    },
+    // 点击-选择授权功能列表
+    async bindBtn2(buttonId) {
+      for (const item of this.btnList) {
+        if (item.buttonId === buttonId) {
+          if (!item.isCheck) {
+            // 选中
+            const {success} = await Api.postComRoleAuth(this.selectedRowInfo[0].companyId, buttonId)
+            if (success) item.isCheck = true
+          } else {
+            // 取消选中
+            // const {success} = await Api.delButtonList({menuId,buttonId})
+            // if (success) item.isCheck = false
+          }
+        }
+      }
     }
   },
   created() {

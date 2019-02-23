@@ -9,6 +9,8 @@
             <el-button type="primary" v-if="butttonList.includes('clickButtonAut')" @click="clickButtonAut"><i class="el-icon-circle-check el-icon--left"></i>功能授权</el-button>
              <el-button type="primary" v-if="butttonList.includes('clickDataAut')" @click="clickDataAut"><i class="el-icon-circle-check el-icon--left"></i>数据授权</el-button>
             <el-button type="primary" v-if="butttonList.includes('clickFieldAut')" @click="clickFieldAut"><i class="el-icon-circle-check el-icon--left"></i>字段授权</el-button>
+            <el-button type="primary" v-if="butttonList.includes('clickBusinessAut')" @click="clickBusinessAut"><i class="el-icon-circle-check el-icon--left"></i>业务授权</el-button>
+            <el-button type="primary" v-if="butttonList.includes('clickRoleAut')" @click="clickRoleAut"><i class="el-icon-circle-check el-icon--left"></i>角色授权</el-button>
         </div>
         <el-table
             class="table"
@@ -93,6 +95,14 @@ export default {
     // 点击--字段授权
     clickFieldAut() {
         this.$emit('clickFieldAut')
+    },
+    // 点击--业务授权
+    clickBusinessAut() {
+        this.$emit('clickBusinessAut')
+    },
+    // 点击--角色授权
+    clickRoleAut() {
+        this.$emit('clickRoleAut')
     }
   },
   computed: {
