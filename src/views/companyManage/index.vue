@@ -54,16 +54,19 @@ export default {
   data() {
     return {
       tableData: [],
-      butttonList: ['clickAdd', 'clickEdit', 'clickDel', 'clickBusinessAut',  'clickRoleAut'],
+      butttonList: ['clickAdd', 'clickEdit', 'clickBusinessAut',  'clickRoleAut'],
       tableThead: [
         {label: 'companyId', prop: 'companyId', hidden: true},
+        {label: 'db部署服务器', prop: 'dbServiceId', prop2: 'dbServerName',tagType: 'select', option: []},  
         {label: '公司名称', prop: 'companyName', tagType: 'input', type:"text"},
+        {label: '登录账号', prop: 'loginAccount', tagType: 'input', type:"text", hidden: true},  
+        {label: '登录密码', prop: 'loginPassWord', tagType: 'input', type:"password", hidden: true},  
         {label: '公司代码', prop: 'companyCode', tagType: 'input', type:"text"},
-        {label: '公司类型', prop: 'companyType', tagType: 'select', option: []},
-        {label: '账号', prop: 'account', tagType: 'input', type:"text"},
-        {label: 'db部署服务器', prop: 'dbServerName', tagType: 'select', option: []},  
-        {label: '数据库名称', prop: 'dbName', tagType: 'input', type:"text"},
-        {label: '使用期', prop: 'expireDate', tagType: 'input', type:"text"},        
+        {label: '联系方式', prop: 'mobile', tagType: 'input', type:"text"},
+        // {label: '公司地址', prop: 'address', tagType: 'input', type:"text"},
+        {label: '公司邮箱', prop: 'email', tagType: 'input', type:"text"},
+        {label: '公司类型', prop: 'companyType', prop2:'companyTypeName', tagType: 'select', option: []},
+        {label: '使用期', prop: 'expirationTime', tagType: 'dateTimePicker'},        
         {label: '是否禁用', prop: 'isDisable', tagType: 'radio', radioInfo: [{radioText: '是', radioLabel: true}, {radioText: '否', radioLabel: false}]}
       ],
       form: {},
@@ -94,27 +97,54 @@ export default {
       this.form = {...this.form, ...obj}
     },
     // 获取--获取基本数据
+    // async getBaseSelect() {
+    //   // 公司类型
+    //   const resCom =  await Api.getComRoleList()
+    //   // 服务器类型
+    //   const resSer = await Api.getSerList()
+    //   const comOptions = []
+    //   const serOptions = []
+    //   if (resCom.data) {
+    //     for (const item of resCom.data) {
+    //       const option = {
+    //         value: item.roleName,
+    //         label: item.roleName
+    //       }
+    //       comOptions.push(option)
+    //     }
+    //   }
+    //    if (resSer.data) {
+    //     for (const item of resSer.data) {
+    //       const option = {
+    //         value: item.dbServiceName,
+    //         label: item.dbServiceName
+    //       }
+    //       serOptions.push(option)
+    //     }
+    //   }
+    //   for (const item of this.tableThead) {
+    //     // 服务器数据初始化
+    //     if (item.tagType === 'select' && item.prop === 'companyType') {
+    //       item.option = comOptions
+    //     }
+    //     if (item.tagType === 'select' && item.prop === 'dbServerName') {
+    //       item.option = serOptions
+    //     }
+    //   }
+    //   if (!this.form.dbServerName) this.form.dbServerName = serOptions[0].value
+    //   if (!this.form.companyType) this.form.companyType = comOptions[0].value
+    // },
     async getBaseSelect() {
       // 公司类型
-      const resCom =  await Api.getComRoleList()
+      const resCom =  await Api.getComCompanyTypeList()
       // 服务器类型
       const resSer = await Api.getSerList()
-      const comOptions = []
       const serOptions = []
-      if (resCom.data) {
-        for (const item of resCom.data) {
-          const option = {
-            value: item.roleName,
-            label: item.roleName
-          }
-          comOptions.push(option)
-        }
-      }
-       if (resSer.data) {
+      if (resSer.data) {
         for (const item of resSer.data) {
           const option = {
-            value: item.dbServiceName,
-            label: item.dbServiceName
+            id: item.dbServiceId,
+            name: item.dbServiceName
           }
           serOptions.push(option)
         }
@@ -122,14 +152,14 @@ export default {
       for (const item of this.tableThead) {
         // 服务器数据初始化
         if (item.tagType === 'select' && item.prop === 'companyType') {
-          item.option = comOptions
+          item.option =  resCom.data
         }
-        if (item.tagType === 'select' && item.prop === 'dbServerName') {
+        if (item.tagType === 'select' && item.prop === 'dbServerId') {
           item.option = serOptions
         }
       }
-      if (!this.form.dbServerName) this.form.dbServerName = serOptions[0].value
-      if (!this.form.companyType) this.form.companyType = comOptions[0].value
+      if (!this.form.companyType) this.form.companyType = resCom.data[0].id
+      if (!this.form.dbServerId) this.form.dbServerId = serOptions[0].id
     },
     // 获取--获取角色列表
     async getList() {
@@ -158,15 +188,20 @@ export default {
       if (!this.selectedRowInfo || !this.selectedRowInfo.length) return this.$alert('请选中需要编辑的行', '提示', {confirmButtonText: '确定'})
       if (this.selectedRowInfo.length > 1) return this.$alert('只能选中一行进行编辑', '提示', {confirmButtonText: '确定'})
       this.dialogFormVisible = true
+      this.dialogTitle = '编辑'
       this.isSummit = false
-      this.form = this.selectedRowInfo[0]
+      const {success, data} =  await Api.getComInfo(this.selectedRowInfo[0].companyId)
+      if (success) {
+        this.form = data
+        if (!this.form.loginPassWord) this.form.loginPassWord = ""
+      }
     },
     // 点击--确定编辑
     async eidt() {
       const { success } = await  Api.editComMa(this.selectedRowInfo[0].companyId, this.form)
       if (success) {
         this.$message.success('编辑成功')
-        this.getRoleList()
+        this.getList()
         this.dialogFormVisible = false
       }
     },
@@ -250,12 +285,12 @@ export default {
       if (success) this.btnList2 = data
     },
     // 点击-选择授权功能列表
-    async bindBtn2(buttonId) {
-      for (const item of this.btnList) {
-        if (item.buttonId === buttonId) {
+    async bindBtn2(roleId) {
+      for (const item of this.btnList2) {
+        if (item.roleId === roleId) {
           if (!item.isCheck) {
             // 选中
-            const {success} = await Api.postComRoleAuth(this.selectedRowInfo[0].companyId, buttonId)
+            const {success} = await Api.postComRoleAuth(this.selectedRowInfo[0].companyId, roleId)
             if (success) item.isCheck = true
           } else {
             // 取消选中

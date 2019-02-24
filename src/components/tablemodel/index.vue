@@ -34,6 +34,7 @@
             <template slot-scope="scope">
                 <div v-if="scope.row[item.prop] === true">是</div>
                 <div v-else-if="scope.row[item.prop] === false">否</div>
+                <div v-else-if="item.hasOwnProperty('prop2') === true">{{scope.row[item.prop2]}}</div>
                 <div v-else>{{scope.row[item.prop]}}</div>
             </template>
             </el-table-column>

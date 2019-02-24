@@ -280,6 +280,7 @@ export default {
     },
     getMenuId(menuId, index) {
       if (!this.nodeClickInfo) this.nodeClickInfo = {}
+      console.log('getMenuId', menuId, index)
       // this.nodeClickInfo.id = menuId
       this.selectRowId = menuId
       this.selectRowIndex = index
@@ -296,8 +297,8 @@ export default {
     },
     // 选择功能列表
     async bindBtn(buttonId) {
-      if (!this.nodeClickInfo) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
-      const menuId = this.nodeClickInfo.id
+      if (!this.selectRowId) return this.$alert('请选中需要授权的行', '提示', {confirmButtonText: '确定'})
+      const menuId = this.selectRowId
       for (const item of this.btnList) {
         if (item.buttonId === buttonId) {
           if (!item.isCheck) {
@@ -319,7 +320,6 @@ export default {
       this.isSummit = false
       const {success, data} = await Api.getMenuInfo(this.selectRowId)
       if (success) {
-        console.log('data', data)
         this.selected = data.parentId
         this.form = data
         console.log('this.form', this.form)

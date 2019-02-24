@@ -1,7 +1,8 @@
 import axios from 'axios'
 // import store from '@/store'
-import { getToken } from '@/utils/auth'
+import { getToken,  removeToken} from '@/utils/auth'
 import * as tools from './tools'
+import { router } from '../router'
 const baseURL = 'http://tyg.sztymk.com:1004/rbac-v1.0'
 
 const http = axios.create({
@@ -32,10 +33,6 @@ http.interceptors.response.use(
         type: 'error',
         message: res.error.message
       })
-      if (res.code === '403') {
-        // 接口自定义错误代码
-        // 移除登陆token 显示接口错误消息
-      }
       return Promise.reject(res)
     }
     return Promise.resolve(res)
@@ -46,6 +43,13 @@ http.interceptors.response.use(
       message: error.message,
       duration: 5000
     })
+    const {status} = error.response
+    if (status === 403 || status === 401) {
+      removeToken()
+      router.replace({
+        path: '/login'
+      })
+    }
     return Promise.reject(error)
   }
 )

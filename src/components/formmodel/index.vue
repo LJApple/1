@@ -12,16 +12,24 @@
           </el-form-item>
           <el-form-item :key="index" v-else-if="item.tagType === 'select'" :label="item.label" 
           :label-width="formLabelWidth">
-          <view>{{form[item.prop]}}</view>
             <el-select v-model="form[item.prop]" 
             style="width: 300px" placeholder="请选择">
               <el-option
                 v-for="item in item.option"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item :key="index" v-else-if="item.tagType === 'dateTimePicker'" :label="item.label" 
+          :label-width="formLabelWidth">
+            <view>{{form[item.prop]}}</view>
+             <el-date-picker
+              v-model="form[item.prop]"
+              type="datetime"
+              placeholder="选择日期时间">
+            </el-date-picker>
           </el-form-item>
         </template>
       </el-form>

@@ -75,3 +75,18 @@ export function postComRoleAuth(companyId, roleId) {
     data
   })
 }
+// 获取公司类型
+export function getComCompanyTypeList() {
+  return http({
+    url: `${base}CompanyTypeList`,
+    method: 'get'
+  })
+}
+
+// 获取编辑详情
+export function getComInfo(companyId) {
+  return http({
+    url: `${base}Info/${companyId}`,
+    method: 'get'
+  })
+}
